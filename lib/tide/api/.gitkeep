@@ -1,0 +1,30 @@
+defmodule Tide.API do
+  @moduledoc """
+  """
+  use Plug.Router
+  require Logger
+
+  plug Plug.Logger
+  plug Plug.Parsers, parsers: [:json], json_decoder: Poison
+  plug :match
+  plug :dispatch
+
+  get "/jobs" do
+    send_resp(conn, 200, encode(%{jobs: []}))
+  end
+
+  get "jobs/:id" do
+  end
+
+  delete "jobs/:id" do
+  end
+
+  put "jobs/:id" do
+  end
+
+  post "jobs" do
+  end
+
+  defp encode(body), do: Poison.encode!(body)
+  defp decode(body), do: Poison.decode!(body)
+end

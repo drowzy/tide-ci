@@ -15,7 +15,7 @@ defmodule Tide.Mixfile do
   def application do
     [
       extra_applications: [:logger],
-      mod: {Ahab, []}
+      mod: {Tide, []}
     ]
   end
 
@@ -26,6 +26,9 @@ defmodule Tide.Mixfile do
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
       {:poison, "~> 3.0"},
       {:httpoison, "~> 0.12"},
+      {:cowboy, "~> 1.1.2"},
+      {:plug, "~> 1.4.3"},
+      {:bypass, "~> 0.8", only: :test},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
       {:dogma, "~> 0.1", only: [:dev]}
     ]

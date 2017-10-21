@@ -8,9 +8,10 @@ defmodule Tide do
     import Supervisor.Spec, warn: false
 
     children = [
-      # supervisor(Ahab.Docker.Supervisor, []),
+      Plug.Adapters.Cowboy.child_spec(:http, Tide.API, [], port: 7070)
+      # supervisor(Tide.Docker.Supervisor, []),
     ]
 
-    Supervisor.start_link(children, strategy: :one_for_one, name: __MODULE__)
+    Supervisor.start_link(children, strategy: :one_for_one, name: Tide.Supervisor)
   end
 end

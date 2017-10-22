@@ -33,7 +33,7 @@ defmodule Tide.Repository do
   @doc """
   Creates an archive, and outputs a stream of the repository
   """
-  def archive(%__MODULE__{name: name, commit_ish: commit} = repo, opts \\ []) do
+  def archive(%__MODULE__{name: name, commit_ish: commit, path: path} = repo, opts \\ []) do
     format = Keyword.get(opts, :format, @archive_format)
     output = "#{name}:#{commit}.#{format}"
     with {:ok, git_repo} <- clone_or_new(repo),
@@ -42,7 +42,12 @@ defmodule Tide.Repository do
            "--format=#{format}",
            commit
          ]) do
-      :ok
+
+      location = path
+      |> Path.expand
+      |> Path.join(output)
+
+      {:ok, File.stream!(location)}
     else
       {:error, reason} -> {:error, reason}
     end

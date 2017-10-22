@@ -1,15 +1,16 @@
 defmodule Tide.DockerClientTest do
   use ExUnit.Case, async: true
 
-  @headers %{"Content-Type" => "application/json"}
-  @body %{"foo" => "bar"}
-
   setup do
-    bypass = Bypass.open
-    {:ok, bypass: bypass}
+    Tesla.Mock.mock fn
+      %{method: :get, url: "http://example.com/hello"} ->
+        %Tesla.Env{status: 200, body: "hello"}
+      %{method: :post, url: "http://example.com/world"} ->
+        %Tesla.Env{status: 200, body: "hi!"}
+    end
   end
 
-  test "ok", %{bypass: bypass} do
+  test "ok" do
     # Bypass.expect_once bypass, "POST", "/foo/bar", fn conn ->
     #   Plug.Conn.resp(conn, 200, ~s<{\"foo\": \"bar\"}>)
     # end

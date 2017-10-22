@@ -29,7 +29,6 @@ defmodule Tide.Mixfile do
       {:cowboy, "~> 1.1.2"},
       {:plug, "~> 1.4.3"},
       {:git_cli, "~> 0.2"},
-      {:tesla, "~> 0.9.0"},
       {:temp, "~> 0.4", only: :test},
       {:bypass, "~> 0.8", only: :test},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

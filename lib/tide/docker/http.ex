@@ -31,6 +31,13 @@ defmodule Tide.Docker.HTTP do
     |> decode_body
   end
 
+  def stream(uri, resource, data, headers \\ []) do
+    base_url = uri <> resource
+    headers = %{"content-type" => "application/tar", "accept" => "application/json"}
+
+    HTTPoison.post!(base_url, {:stream, data}, headers)
+  end
+
   defp decode_body(%HTTPoison.Response{body: ""}), do: :nil
   defp decode_body(%HTTPoison.Response{body: body}) do
     case Poison.decode(body) do

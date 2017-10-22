@@ -1,26 +1,29 @@
-defmodule Tide.Git do
+defmodule Tide.Repository do
   @moduledoc """
   """
-  @type git_type :: (:ssh | :https)
 
-  defstruct type: :ssh,
+  defstruct name: nil,
+    type: :ssh,
     uri: nil,
-    default_branch: "master",
+    commit_ish: "master",
     path: nil
 
+  @type git_type :: (:ssh | :https)
   @type t :: %__MODULE__{
+    name: String.t,
     type: git_type,
     uri: String.t,
-    default_branch: String.t,
+    commit_ish: String.t,
     path: String.t,
   }
+  @archive_format "tar.gz"
 
   @doc """
   Ensures that the repository exists on the filesystem.
   This is sort of a clone, if the directory is not empty
   """
-  @spec ensure(Tide.Git.t) :: {:ok, Tide.Git.t} | {:error, String.t}
-  def ensure(%__MODULE__{default_branch: branch} = git) do
+  @spec ensure(Tide.Repository.t) :: {:ok, Tide.Repository.t} | {:error, String.t}
+  def ensure(%__MODULE__{commit_ish: branch} = git) do
     case clone_or_new(git) do
       {:ok, repo} -> Git.pull repo, ["--rebase", "origin", branch]
       {:error, reason} -> {:error, reason}
@@ -30,12 +33,14 @@ defmodule Tide.Git do
   @doc """
   Creates an archive, and outputs a stream of the repository
   """
-  def archive(%__MODULE__{} = git, opts \\ []) do
-    with {:ok, repo} <- clone_or_new(git),
-         {:ok, _} <- Git.archive(repo, [
-           "--output=test.tar.gz",
-           "--format=tar.gz",
-           "HEAD"
+  def archive(%__MODULE__{name: name, commit_ish: commit} = repo, opts \\ []) do
+    format = Keyword.get(opts, :format, @archive_format)
+    output = "#{name}:#{commit}.#{format}"
+    with {:ok, git_repo} <- clone_or_new(repo),
+         {:ok, _} <- Git.archive(git_repo, [
+           "--output=#{output}",
+           "--format=#{format}",
+           commit
          ]) do
       :ok
     else
@@ -46,7 +51,7 @@ defmodule Tide.Git do
   @doc """
   Checks if the remote repo is accessible
   """
-  @spec accessable?(Tide.Git.t) :: boolean
+  @spec accessable?(Tide.Repository.t) :: boolean
   def accessable?(%__MODULE__{uri: uri, type: :ssh}) do
     case Git.ls_remote(nil, [uri]) do
       {:ok, _} -> true
@@ -67,7 +72,7 @@ defmodule Tide.Git do
   @doc """
   Removes the directory
   """
-  @spec clean(Tide.Git.t) :: {:ok, any()} | {:error, String.t}
+  @spec clean(Tide.Repository.t) :: {:ok, any()} | {:error, String.t}
   def clean(%__MODULE__{} = attrs) do
   end
 

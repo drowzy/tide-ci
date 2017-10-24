@@ -5,7 +5,7 @@ defmodule Tide.Docker.HTTP do
   require Logger
 
   defp default_headers do
-    {:ok , hostname} = :inet.gethostname
+    {:ok, hostname} = :inet.gethostname()
     %{"Content-Type" => "application/json", "Host" => hostname}
   end
 
@@ -14,6 +14,7 @@ defmodule Tide.Docker.HTTP do
   """
   def get(uri, resource, opt \\ []) do
     base_url = uri <> resource
+
     base_url
     |> HTTPoison.get!(default_headers(), params: opt)
     |> decode_body
@@ -23,7 +24,7 @@ defmodule Tide.Docker.HTTP do
   Send a POST request to the Docker API, JSONifying the passed in data.
   """
   def post(uri, resource, data \\ "", opt \\ []) do
-    data = Poison.encode! data
+    data = Poison.encode!(data)
     base_url = uri <> resource
 
     base_url
@@ -31,14 +32,15 @@ defmodule Tide.Docker.HTTP do
     |> decode_body
   end
 
-  def stream(uri, resource, data, headers \\ []) do
+  def stream(uri, resource, data, headers \\ %{}, opts \\ []) do
     base_url = uri <> resource
     headers = %{"content-type" => "application/tar", "accept" => "application/json"}
 
     HTTPoison.post!(base_url, {:stream, data}, headers)
   end
 
-  defp decode_body(%HTTPoison.Response{body: ""}), do: :nil
+  defp decode_body(%HTTPoison.Response{body: ""}), do: nil
+
   defp decode_body(%HTTPoison.Response{body: body}) do
     case Poison.decode(body) do
       {:ok, map} -> normalize(map)
@@ -47,9 +49,10 @@ defmodule Tide.Docker.HTTP do
   end
 
   defp normalize(body) when is_list(body), do: Enum.map(body, &normalize/1)
+
   defp normalize(body) do
     for {key, val} <- body,
-      into: %{},
-      do: {Macro.underscore(key), val}
+        into: %{},
+        do: {Macro.underscore(key), val}
   end
 end

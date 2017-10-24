@@ -3,13 +3,13 @@ defmodule Tide.Docker.Client do
   Docker client
   """
   @version "v1.29"
-  @uri "http+unix://#{URI.encode_www_form("/var/run/docker.sock")}/#{@version}"
+  @uri "http+unix://#{URI.encode_www_form("/var/run/docker.sock")}"
 
-  def build(uri, tar_stream), do: do_build(uri, tar_stream)
-  def build(tar_stream), do: do_build(@uri, tar_stream)
+  def default_uri, do: @uri
+  def build(uri, tar_stream, opts \\ []) do
+    base_url = uri <> "/build"
+    headers = %{"content-type" => "application/tar", "accept" => "application/json"}
 
-  defp do_build(uri, tar_stream) do
-    Tide.Docker.HTTP.stream(uri, "/build", tar_stream)
+    HTTPoison.post!(base_url, {:stream, tar_stream}, headers, opts)
   end
-
 end

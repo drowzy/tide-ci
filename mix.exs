@@ -6,7 +6,7 @@ defmodule Tide.Mixfile do
       app: :tide_ci,
       version: "0.1.0",
       elixir: "~> 1.5",
-      start_permanent: Mix.env == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
@@ -29,6 +29,7 @@ defmodule Tide.Mixfile do
       {:cowboy, "~> 1.1.2"},
       {:plug, "~> 1.4.3"},
       {:git_cli, "~> 0.2"},
+      {:gen_stage, "~> 0.12"},
       {:temp, "~> 0.4", only: :test},
       {:bypass, "~> 0.8", only: :test},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

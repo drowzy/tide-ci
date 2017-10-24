@@ -3,29 +3,30 @@ defmodule Tide.Repository do
   """
 
   defstruct name: nil,
-    type: :ssh,
-    uri: nil,
-    commit_ish: "master",
-    path: nil
+            type: :ssh,
+            uri: nil,
+            commit_ish: "master",
+            path: nil
 
-  @type git_type :: (:ssh | :https)
+  @type git_type :: :ssh | :https
   @type t :: %__MODULE__{
-    name: String.t,
-    type: git_type,
-    uri: String.t,
-    commit_ish: String.t,
-    path: String.t,
-  }
+          name: String.t(),
+          type: git_type,
+          uri: String.t(),
+          commit_ish: String.t(),
+          path: String.t()
+        }
+
   @archive_format "tar.gz"
 
   @doc """
   Ensures that the repository exists on the filesystem.
   This is sort of a clone, if the directory is not empty
   """
-  @spec ensure(Tide.Repository.t) :: {:ok, Tide.Repository.t} | {:error, String.t}
+  @spec ensure(Tide.Repository.t()) :: {:ok, Tide.Repository.t()} | {:error, String.t()}
   def ensure(%__MODULE__{commit_ish: branch} = git) do
     case clone_or_new(git) do
-      {:ok, repo} -> Git.pull repo, ["--rebase", "origin", branch]
+      {:ok, repo} -> Git.pull(repo, ["--rebase", "origin", branch])
       {:error, reason} -> {:error, reason}
     end
   end
@@ -35,17 +36,19 @@ defmodule Tide.Repository do
   """
   def archive(%__MODULE__{name: name, commit_ish: commit, path: path} = repo, opts \\ []) do
     format = Keyword.get(opts, :format, @archive_format)
-    output = "#{name}:#{commit}.#{format}"
-    with {:ok, git_repo} <- clone_or_new(repo),
-         {:ok, _} <- Git.archive(git_repo, [
-           "--output=#{output}",
-           "--format=#{format}",
-           commit
-         ]) do
+    output = "#{name}-#{commit}.#{format}"
 
-      location = path
-      |> Path.expand
-      |> Path.join(output)
+    with {:ok, git_repo} <- clone_or_new(repo),
+         {:ok, _} <-
+           Git.archive(git_repo, [
+             "--output=#{output}",
+             "--format=#{format}",
+             commit
+           ]) do
+      location =
+        path
+        |> Path.expand()
+        |> Path.join(output)
 
       {:ok, File.stream!(location)}
     else
@@ -56,7 +59,7 @@ defmodule Tide.Repository do
   @doc """
   Checks if the remote repo is accessible
   """
-  @spec accessable?(Tide.Repository.t) :: boolean
+  @spec accessable?(Tide.Repository.t()) :: boolean
   def accessable?(%__MODULE__{uri: uri, type: :ssh}) do
     case Git.ls_remote(nil, [uri]) do
       {:ok, _} -> true
@@ -65,20 +68,19 @@ defmodule Tide.Repository do
   end
 
   defp clone_or_new(%__MODULE__{path: path, uri: uri}) do
-    path = Path.expand path
+    path = Path.expand(path)
 
-    if File.exists? path do
-      {:ok, Git.new path}
+    if File.exists?(path) do
+      {:ok, Git.new(path)}
     else
-      Git.clone [uri, path]
+      Git.clone([uri, path])
     end
   end
 
   @doc """
   Removes the directory
   """
-  @spec clean(Tide.Repository.t) :: {:ok, any()} | {:error, String.t}
+  @spec clean(Tide.Repository.t()) :: {:ok, any()} | {:error, String.t()}
   def clean(%__MODULE__{} = attrs) do
   end
-
 end

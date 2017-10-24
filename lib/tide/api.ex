@@ -4,27 +4,27 @@ defmodule Tide.API do
   use Plug.Router
   require Logger
 
-  plug Plug.Logger
-  plug Plug.Parsers, parsers: [:json], json_decoder: Poison
-  plug :match
-  plug :dispatch
+  plug(Plug.Logger)
+  plug(Plug.Parsers, parsers: [:json], json_decoder: Poison)
+  plug(:match)
+  plug(:dispatch)
 
   @jobs [
     %{
       "id" => "3d44c531-beab-4025-896e-592a57a15de0",
       "status" => "started | failed | finished",
-      "timestamp" => 1508616202,
-      "finished" => 1508616235,
+      "timestamp" => 1_508_616_202,
+      "finished" => 1_508_616_235,
       "executor" => "node.dev.localhost",
-      "project_id": "f4baff84-4932-4f28-a943-0ec0b3146d87"
+      project_id: "f4baff84-4932-4f28-a943-0ec0b3146d87"
     },
     %{
       "id" => "3d44c531-beab-4025-896e-592a57a15de0",
       "status" => "started | failed | finished",
-      "timestamp" => 1508616202,
-      "finished" => 1508616235,
+      "timestamp" => 1_508_616_202,
+      "finished" => 1_508_616_235,
       "executor" => "node.dev.localhost",
-      "project_id": "f4baff84-4932-4f28-a943-0ec0b3146d87"
+      project_id: "f4baff84-4932-4f28-a943-0ec0b3146d87"
     }
   ]
 

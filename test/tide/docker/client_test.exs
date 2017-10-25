@@ -12,7 +12,7 @@ defmodule Tide.DockerClientTest do
       Plug.Conn.resp(conn, 200, ~s<{"stream":"Step 1/4 : FROM ubuntu:14.04\n"}>)
     end)
 
-    assert %HTTPoison.Response{body: body} =
+    assert {:ok, %HTTPoison.Response{body: body}} =
              Client.build(endpoint_url(bypass.port), Stream.take(["foo"], 1))
   end
 

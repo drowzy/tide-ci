@@ -1,4 +1,4 @@
-defmodule Auth.GrantTest do
+defmodule Tide.RepositoryTest do
   use ExUnit.Case
 
   alias Tide.Repository

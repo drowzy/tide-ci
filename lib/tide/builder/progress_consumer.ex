@@ -8,8 +8,9 @@ defmodule Tide.Builder.ProgressConsumer do
   end
 
   def init(:ok), do: {:consumer, nil}
+
   def handle_events(events, _from, state) do
-    Logger.info("Received #{length events} from producer: #{inspect events}")
+    Logger.info("Received #{length(events)} from producer: #{inspect(events)}")
     {:noreply, [], state}
   end
 

@@ -6,6 +6,7 @@ defmodule Tide.Docker.Client do
   @uri "http+unix://#{URI.encode_www_form("/var/run/docker.sock")}/#{@version}"
 
   def default_uri, do: @uri
+
   def build(uri, tar_stream, opts \\ []) do
     base_url = uri <> "/build"
     headers = %{"content-type" => "application/tar", "accept" => "application/json"}

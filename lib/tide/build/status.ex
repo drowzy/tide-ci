@@ -3,25 +3,11 @@ defmodule Tide.Builder.Producer do
   require Logger
 
   def start_link(opts \\ []) do
-    name = Keyword.get(opts, :job_id, "test")
-    GenStage.start_link(__MODULE__, opts, name: name)
+    GenStage.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
   def init(opts) do
-    uri = Keyword.get(opts, :uri)
-    stream = Keyword.get(opts, :tar_stream)
-
-    {:ok, response} = Tide.Docker.Client.build(uri, stream, stream_to: self())
-
-    {
-      :producer,
-      %{
-        response: response,
-        pending_demand: 0,
-        status: :pending,
-        chunks: []
-      }
-    }
+    {:producer, %{pending_demand: 0, status: :pending, chunks: []}}
   end
 
   def handle_demand(demand, %{chunks: chunks} = state) when demand > 0 do
@@ -70,11 +56,4 @@ defmodule Tide.Builder.Producer do
   end
 
   def handle_info(:stop, state), do: {:stop, :normal, state}
-
-  defp next(%{pending_demand: 0} = state), do: state
-
-  defp next(%{response: response} = state) do
-    {:ok, response} = HTTPoison.stream_next(response)
-    %{state | response: response}
-  end
 end

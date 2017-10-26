@@ -1,4 +1,4 @@
-defmodule Tide.Builder.ProducerTest do
+defmodule Tide.Build.StatusTest do
   use ExUnit.Case
 
   alias Tide.Builder.Producer
@@ -10,6 +10,7 @@ defmodule Tide.Builder.ProducerTest do
 
   test "Producer should handle AsyncChunk", %{state: state} do
     chunk = "{\"stream\": \"Step 1/4 : FROM ubuntu:14.04\n\"}"
+
     {:noreply, [], %{chunks: chunks}} =
       Producer.handle_info(%HTTPoison.AsyncChunk{chunk: chunk}, state)
 
@@ -18,6 +19,7 @@ defmodule Tide.Builder.ProducerTest do
 
   test "Producer sets status processing after receiveing a chunk", %{state: state} do
     chunk = "{\"stream\": \"Step 1/4 : FROM ubuntu:14.04\n\"}"
+
     {:noreply, [], %{status: status}} =
       Producer.handle_info(%HTTPoison.AsyncChunk{chunk: chunk}, state)
 
@@ -25,7 +27,11 @@ defmodule Tide.Builder.ProducerTest do
   end
 
   test "Producer sets status to :started when receiving AsyncHeaders", %{state: state} do
-    {:noreply, [], %{status: status}} = Producer.handle_info(%HTTPoison.AsyncHeaders{headers: [{"accept", "application/json"}]}, state)
+    {:noreply, [], %{status: status}} =
+      Producer.handle_info(
+        %HTTPoison.AsyncHeaders{headers: [{"accept", "application/json"}]},
+        state
+      )
 
     assert status == :started
   end
@@ -35,11 +41,18 @@ defmodule Tide.Builder.ProducerTest do
   end
 
   test "Producer should stop if code is anything but 200", %{state: state} do
-    assert {:stop, {:error, code}, state} = Producer.handle_info(%HTTPoison.AsyncStatus{code: 404}, state)
+    assert {:stop, {:error, code}, state} =
+             Producer.handle_info(%HTTPoison.AsyncStatus{code: 404}, state)
+
     assert code == 404
   end
 
-  test "Producer should stop when end of stream is reached" do
+  test "Producer should set status = done when end of stream", %{state: state} do
+    {:noreply, [], %{status: status}} = Producer.handle_info(%HTTPoison.AsyncEnd{}, state)
+    assert status == :done
   end
 
+  test "Producer should handle :stop sent to info", %{state: state} do
+    assert {:stop, :normal, ^state} = Producer.handle_info(:stop, state)
+  end
 end

@@ -50,7 +50,7 @@ defmodule Tide.Repository do
         |> Path.expand()
         |> Path.join(output)
 
-      {:ok, File.stream!(location)}
+      {:ok, File.stream!(location, [], 2048)}
     else
       {:error, reason} -> {:error, reason}
     end

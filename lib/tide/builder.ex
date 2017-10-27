@@ -9,24 +9,21 @@ defmodule Tide.Buidler do
       path: "~/tide/tide-ci",
       uri: "git@github.com:drowzy/tide-ci.git"
     }
-
-    Logger.info("Ensuring repo exists...")
-
-    {:ok, _} = Tide.Repository.ensure(repo)
-
     uri = Tide.Docker.Client.default_uri()
 
+    Logger.info("Ensuring repo exists...")
     Logger.info("Creating Tar-stream")
 
-    {:ok, stream} = Tide.Repository.archive(repo)
+    {:ok, _} = Tide.Repository.ensure(repo)
+    {:ok, pid} = Tide.Build.start_link(repo: repo, uri: uri)
 
     Logger.info("Ready to stream... Starting reciever")
 
-    {:ok, producer_pid} =
-      Tide.Builder.Producer.start_link(job_id: :job_test, uri: uri, tar_stream: stream)
-
-    {:ok, consumer_pid} = Tide.Builder.ProgressConsumer.start_link()
-
-    GenStage.sync_subscribe(consumer_pid, to: producer_pid)
+    {:ok, stream} = Tide.Build.status(pid)
+    stream
+    |> Stream.each(fn msg ->
+      Logger.info("chunk: #{inspect msg}")
+    end)
+    |> Stream.run
   end
 end

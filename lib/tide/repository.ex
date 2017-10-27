@@ -55,6 +55,15 @@ defmodule Tide.Repository do
       {:error, reason} -> {:error, reason}
     end
   end
+  @doc """
+  archive bang version
+  """
+  def archive!(%__MODULE__{} = repo, opts \\ []) do
+    case archive(repo, opts) do
+      {:ok, stream} -> stream
+      {:error, reason} -> raise reason
+    end
+  end
 
   @doc """
   Checks if the remote repo is accessible

@@ -1,4 +1,4 @@
-defmodule Tide.Builder.Producer do
+defmodule Tide.Build.Status do
   use GenStage
   require Logger
 

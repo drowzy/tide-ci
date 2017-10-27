@@ -9,11 +9,11 @@ defmodule Tide.Build do
 
   def init(opts) do
     uri = Keyword.get(opts, :uri)
-    repo = Kehword.get(opts, :repo)
+    repo = Keyword.get(opts, :repo)
 
     {:ok, pid, response} =
       repo
-      |> Tide.Repository.archive
+      |> Tide.Repository.archive!
       |> proccess_setup(uri)
 
     {:ok, %{

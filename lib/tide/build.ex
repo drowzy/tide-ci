@@ -28,7 +28,7 @@ defmodule Tide.Build do
   def status(pid), do: GenServer.call(pid, :status)
 
   def handle_call(:status, _from, %{status_pid: pid} = state) do
-    stream = GenStage.stream([pid])
+    stream = GenStage.stream([{pid, cancel: :transient}])
     {:reply, {:ok, stream}, state}
   end
 

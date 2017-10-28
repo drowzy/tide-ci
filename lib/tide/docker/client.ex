@@ -9,7 +9,7 @@ defmodule Tide.Docker.Client do
 
   def build(uri, tar_stream, opts \\ []) do
     base_url = uri <> "/build"
-    headers = %{"content-type" => "application/tar", "accept" => "application/json"}
+    headers = %{"content-type" => "application/x-tar", "accept" => "application/json"}
 
     HTTPoison.post(base_url, {:stream, tar_stream}, headers, opts)
   end

@@ -43,6 +43,10 @@ defmodule Tide.Docker.Stream do
     {:noreply, [{:headers, headers}], state}
   end
 
+  def handle_info(%HTTPoison.Error{reason: reason}, state) do
+    {:stop, {:error, reason}, state}
+  end
+
   def handle_info(%HTTPoison.AsyncEnd{}, %{chunks: chunks, demand: demand} = state) do
     {events, new_chunks} = Enum.split(chunks, demand)
 

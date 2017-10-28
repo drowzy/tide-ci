@@ -29,7 +29,7 @@ defmodule Tide.Job do
         status_stream: pid,
         log: [],
         status: :pending
-     }, subsribe_to: pid
+     }, subscribe_to: [pid]
     }
   end
 
@@ -49,7 +49,7 @@ defmodule Tide.Job do
   def handle_call(:status, _from, %{status: status}, state),
     do: {:reply, {:ok, status}, state}
 
-  def handle_call(:log, _from, %{status_pid: pid} = state) do
+  def handle_call(:log, _from, %{status_stream: pid} = state) do
     stream = GenStage.stream([{pid, cancel: :transient}])
 
     {:reply, {:ok, stream}, state}
@@ -59,7 +59,7 @@ defmodule Tide.Job do
     do: List.foldl(events, state, &process_event/2)
 
   defp process_event({:chunk, chunk}, %{log: log} = state) do
-    Logger.info("Log :: #{chunk}")
+    Logger.info("Log :: #{chunk["stream"]}")
     %{state | log: [chunk | log], status: :building}
   end
 

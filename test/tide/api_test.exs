@@ -20,7 +20,7 @@ defmodule Tide.APITest do
   end
 
   test "GET /jobs/{id}" do
-    id = "3d44c531-beab-4025-896e-592a57a15de0"
+    id = "1"
 
     conn =
       conn(:get, "/jobs/#{id}", "")
@@ -50,7 +50,7 @@ defmodule Tide.APITest do
   # end
 
   test "DELETE /jobs" do
-    id = "3d44c531-beab-4025-896e-592a57a15de0"
+    id = "1"
 
     conn =
       conn(:delete, "/jobs/#{id}", "")

@@ -11,16 +11,25 @@ defmodule Tide.API do
 
   @jobs [
     %{
-      "id" => "3d44c531-beab-4025-896e-592a57a15de0",
-      "status" => "started | failed | finished",
+      "id" => "1",
+      "name" => "tide-ci",
+      "repository" => %{
+        "name" => "tide-ci",
+        "path" => "~/tide/tide-ci",
+        "uri" => "git@github.com:drowzy/tide-ci.git"
+      },
       "timestamp" => 1_508_616_202,
       "finished" => 1_508_616_235,
       "executor" => "node.dev.localhost",
       project_id: "f4baff84-4932-4f28-a943-0ec0b3146d87"
     },
     %{
-      "id" => "3d44c531-beab-4025-896e-592a57a15de0",
-      "status" => "started | failed | finished",
+      "id" => "2",
+      "repository" => %{
+        "name" => "rql",
+        "path" => "~/tide/rql",
+        "uri" => "git@github.com:drowzy/rql.git"
+      },
       "timestamp" => 1_508_616_202,
       "finished" => 1_508_616_235,
       "executor" => "node.dev.localhost",
@@ -43,7 +52,14 @@ defmodule Tide.API do
     send_resp(conn, 204, "")
   end
 
-  put "jobs/:id" do
+  put "jobs/:id/build" do
+    job = Enum.find(@jobs, &(&1["id"] == id))
+    %{"name" => name, "path" => path, "uri" => uri} = job["repository"]
+    repo = %Tide.Repository{name: name, path: path, uri: uri}
+    {:ok, _git} = Tide.Repository.ensure(repo)
+    {:ok, child} = Tide.Job.Supervisor.start_job(repo: repo, uri: Tide.Docker.Client.default_uri())
+
+    send_resp(conn, 201, %{"status" => "started"})
   end
 
   post "jobs" do

@@ -6,7 +6,7 @@ defmodule Tide.JobTest do
     {:ok, producer} = GenStage.from_enumerable(["foo", "bar"])
     state = %{
       status: :pending,
-      status_pid: producer,
+      status_stream: producer,
       log: []
     }
     chunk = {:chunk, %{"stream" => "Step 1/4 : FROM ubuntu:14.04"}}

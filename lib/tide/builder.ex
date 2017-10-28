@@ -14,13 +14,8 @@ defmodule Tide.Buidler do
     Logger.info("Ensuring repo exists...")
     Logger.info("Creating Tar-stream")
 
-    {:ok, pid} = Tide.Build.start_link(repo: repo, uri: uri)
+    {:ok, pid} = Tide.Job.Supervisor.start_job(repo: repo, uri: uri)
 
     Logger.info("Ready to stream... Starting reciever")
-
-    {:ok, stream} = Tide.Build.status(pid)
-    stream |> Enum.each(fn msg ->
-      Logger.info("chunk1: #{inspect msg}")
-    end)
   end
 end

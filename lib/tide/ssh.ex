@@ -96,15 +96,14 @@ defmodule Tide.SSH do
   # or private key.
   defp tunnel_opts(host, user) do
     tunnel = Tunnel.new(from: socket_path(host), to: @target_socket)
-    args = ["ssh", "-o", ~s(ExitOnForwardFailure\syes)] ++ Tunnel.args(tunnel) ++ ["#{user}@#{host}"]
+    args = ["-o", ~s(ExitOnForwardFailure\syes)] ++ Tunnel.args(tunnel) ++ ["#{user}@#{host}"]
     cmd = Application.app_dir(:tide_ci, "priv/wrapper.sh")
 
     Logger.info(Enum.join(args, " "))
     Logger.info(inspect args)
     # Tide.SSH.connect(Tide.SSH, "192.168.90.15")
-    # proc = Porcelain.spawn("ssh", args, in: :receive, out: {:send, self()}, err: {:send, self()})
-    proc = Porcelain.spawn(cmd, args, in: :receive, out: {:send, self()}, err: {:send, self()})
-
+    proc = Porcelain.spawn("ssh", args, in: :receive, out: {:send, self()}, err: {:send, self()})
+    # proc = Porcelain.spawn_shell(cmd, args, in: :receive, out: {:send, self()}, err: {:send, self()})
     Logger.info(inspect proc)
 
     {tunnel, proc}

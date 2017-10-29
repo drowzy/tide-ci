@@ -55,9 +55,9 @@ defmodule Tide.API do
   put "jobs/:id/build" do
     job = Enum.find(@jobs, &(&1["id"] == id))
     %{"name" => name, "path" => path, "uri" => uri} = job["repository"]
+    {:ok, docker_uri} = Tide.SSH.tunnel_uri(Tide.SSH, "192.168.90.15")
     repo = %Tide.Repository{name: name, path: path, uri: uri}
-    {:ok, _git} = Tide.Repository.ensure(repo)
-    {:ok, child} = Tide.Job.Supervisor.start_job(repo: repo, uri: Tide.Docker.Client.default_uri())
+    {:ok, child} = Tide.Job.Supervisor.start_job(repo: repo, uri: docker_uri)
 
     send_resp(conn, 201, %{"status" => "started"})
   end

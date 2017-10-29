@@ -59,7 +59,7 @@ defmodule Tide.Job do
     do: List.foldl(events, state, &process_event/2)
 
   defp process_event({:chunk, chunk}, %{log: log} = state) do
-    Logger.info("Log :: #{chunk["stream"]}")
+    Logger.info("Log :: #{inspect chunk}")
     %{state | log: [chunk | log], status: :building}
   end
 

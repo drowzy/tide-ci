@@ -14,7 +14,7 @@ defmodule Tide.SSH.Tunnel do
     id: String.t(),
     from: String.t(),
     to: String.t(),
-    direction: :local | :remote,
+    direction: :local | :reverse,
     cmd: String.t()
   }
 
@@ -27,7 +27,7 @@ defmodule Tide.SSH.Tunnel do
       from: from,
       to: to,
       direction: direction,
-      cmd: "-#{Enum.join(@default_options, " ")} #{dir_opt(direction)}#{bind_opt(from, to)}"
+      cmd: "-#{Enum.join(@default_options,"")} #{dir_opt(direction)} #{bind_opt(from, to)}"
     }
   end
 
@@ -37,6 +37,11 @@ defmodule Tide.SSH.Tunnel do
       _ -> "http://127.0.0.1:#{from}"
     end
   end
+
+  @doc """
+  Returns tunnel arguments as an args list
+  """
+  def args(%__MODULE__{cmd: cmd} = t), do: String.split(cmd)
 
   defp bind_opt(from, to), do: "#{from}:#{to}"
   defp dir_opt(:local), do: "-L"

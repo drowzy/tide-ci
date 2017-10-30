@@ -59,7 +59,7 @@ defmodule Tide.API do
     repo = %Tide.Repository{name: name, path: path, uri: uri}
     {:ok, child} = Tide.Job.Supervisor.start_job(repo: repo, uri: docker_uri)
 
-    send_resp(conn, 201, %{"status" => "started"})
+    send_resp(conn, 201, encode(%{"status" => "started"}))
   end
 
   post "jobs" do

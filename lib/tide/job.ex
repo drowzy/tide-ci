@@ -77,5 +77,4 @@ defmodule Tide.Job do
     {:ok, response} = Tide.Docker.Client.build(uri, tar_stream, stream_to: pid)
     {:ok, pid, response}
   end
-
 end

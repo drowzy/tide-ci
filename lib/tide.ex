@@ -8,7 +8,7 @@ defmodule Tide do
     import Supervisor.Spec, warn: false
 
     children = [
-      Plug.Adapters.Cowboy.child_spec(:http, Tide.API, [], port: 7070),
+      Plug.Adapters.Cowboy.child_spec(:http, Tide.API, [], port: 1666),
       supervisor(Tide.Job.Supervisor, [])
     ]
 

@@ -31,5 +31,4 @@ defmodule Tide.Hosts.TcpProxyTest do
 
     assert_receive {:msg, _data}, 5000
   end
-
 end

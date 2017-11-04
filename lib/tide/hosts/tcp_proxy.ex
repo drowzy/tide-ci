@@ -6,16 +6,10 @@ defmodule Tide.Hosts.TcpProxy do
     :gen_tcp.listen(0, opts)
   end
 
-  def close(socket), do: :gen_tcp.close(socket)
-
-  def send_msg(socket, data), do: :gen_tcp.send(socket, data)
-
   def accept(socket, callback) do
     {:ok, client_socket} = :gen_tcp.accept(socket)
 
-    IO.puts("accepting socket #{inspect client_socket}")
     {:ok, pid} = Task.Supervisor.start_child(Tide.Hosts.TaskSupervisor, fn ->
-      IO.puts("started task to handle connections")
       handle_connection(client_socket, callback)
     end)
 
@@ -24,12 +18,14 @@ defmodule Tide.Hosts.TcpProxy do
     client_socket
   end
 
+  def close(socket), do: :gen_tcp.close(socket)
+  def send_msg(socket, data), do: :gen_tcp.send(socket, data)
+
   defp handle_connection(socket, callback) do
     case :gen_tcp.recv(socket, 0) do
       {:error, :closed} ->
         IO.puts("Socket is closed")
       {:ok, data} ->
-        IO.puts("receive data")
         callback.(data)
         handle_connection(socket, callback)
     end

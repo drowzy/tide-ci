@@ -9,6 +9,7 @@ defmodule Tide do
 
     children = [
       Plug.Adapters.Cowboy.child_spec(:http, Tide.API, [], port: 1666),
+      supervisor(Task.Supervisor, [[name: Tide.Hosts.TaskSupervisor]]),
       supervisor(Tide.Job.Supervisor, [])
     ]
 

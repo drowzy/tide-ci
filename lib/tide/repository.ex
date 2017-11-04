@@ -55,6 +55,7 @@ defmodule Tide.Repository do
       {:error, reason} -> {:error, reason}
     end
   end
+
   @doc """
   archive bang version
   """

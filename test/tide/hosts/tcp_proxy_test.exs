@@ -20,7 +20,7 @@ defmodule Tide.Hosts.TcpProxyTest do
 
   test "runs the callback with data from the socket", %{path: path, ls: ls, path: path} do
     pid = self()
-    callback = &(send(pid, {:msg, &1}))
+    callback = &send(pid, {:msg, &1})
 
     Task.start(fn ->
       Tide.Hosts.TcpProxy.accept(ls, callback)

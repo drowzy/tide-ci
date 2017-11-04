@@ -11,6 +11,11 @@ defmodule Tide.Docker.Client do
     base_url = uri <> "/build"
     headers = %{"content-type" => "application/x-tar", "accept" => "application/json"}
 
-    HTTPoison.post(base_url, {:stream, tar_stream}, headers, Keyword.merge(opts, recv_timeout: @timeout))
+    HTTPoison.post(
+      base_url,
+      {:stream, tar_stream},
+      headers,
+      Keyword.merge(opts, recv_timeout: @timeout)
+    )
   end
 end

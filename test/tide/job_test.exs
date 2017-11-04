@@ -1,14 +1,15 @@
 defmodule Tide.JobTest do
   use ExUnit.Case, async: true
 
-
   setup do
     {:ok, producer} = GenStage.from_enumerable(["foo", "bar"])
+
     state = %{
       status: :pending,
       status_stream: producer,
       log: []
     }
+
     chunk = {:chunk, %{"stream" => "Step 1/4 : FROM ubuntu:14.04"}}
     {:ok, %{state: state, chunk: chunk}}
   end
@@ -45,5 +46,4 @@ defmodule Tide.JobTest do
   test "handles stop message", %{state: state} do
     {:stop, :normal, ^state} = Tide.Job.handle_info({:ok, :stop}, state)
   end
-
 end

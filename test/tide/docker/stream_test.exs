@@ -13,6 +13,7 @@ defmodule Tide.Docker.StreamTest do
 
     {:noreply, [], %{chunks: chunks}} =
       Stream.handle_info(%HTTPoison.AsyncChunk{chunk: chunk}, state)
+
     {:chunk, res} = List.first(chunks)
 
     assert res == Poison.decode!(chunk)
@@ -20,14 +21,15 @@ defmodule Tide.Docker.StreamTest do
 
   test "should returns http headers as a :header chunk", %{state: state} do
     assert {:noreply, [{:headers, headers}], _} =
-      Stream.handle_info(
-        %HTTPoison.AsyncHeaders{headers: [{"accept", "application/json"}]},
-        state
-      )
+             Stream.handle_info(
+               %HTTPoison.AsyncHeaders{headers: [{"accept", "application/json"}]},
+               state
+             )
   end
 
   test "should return status code as a :status chunk", %{state: state} do
-    assert {:noreply, [{:status, code}], ^state} = Stream.handle_info(%HTTPoison.AsyncStatus{code: 200}, state)
+    assert {:noreply, [{:status, code}], ^state} =
+             Stream.handle_info(%HTTPoison.AsyncStatus{code: 200}, state)
 
     assert code == 200
   end

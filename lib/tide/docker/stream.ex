@@ -20,13 +20,14 @@ defmodule Tide.Docker.Stream do
     {:noreply, events, %{state | chunks: new_events, demand: pending_demand}}
   end
 
-  def handle_info(
-        %HTTPoison.AsyncChunk{chunk: chunk},
-        %{chunks: chunks, demand: demand} = state
-      ) do
-    {events, new_chunks} = Enum.split([
-      {:chunk, Poison.decode!(chunk)} | chunks
-    ], demand)
+  def handle_info(%HTTPoison.AsyncChunk{chunk: chunk}, %{chunks: chunks, demand: demand} = state) do
+    {events, new_chunks} =
+      Enum.split(
+        [
+          {:chunk, Poison.decode!(chunk)} | chunks
+        ],
+        demand
+      )
 
     {
       :noreply,

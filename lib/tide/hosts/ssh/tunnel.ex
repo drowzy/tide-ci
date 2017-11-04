@@ -13,26 +13,30 @@ defmodule Tide.Hosts.SSH.Tunnel do
 
   def init(_opts) do
     {:ok, ls} = TcpProxy.listen(Path.join(@root_dir, "/test.sock"))
-    {:ok, %{
+
+    {
+      :ok,
+      %{
         ls: ls,
         channel: nil,
         ssh: nil,
         client: nil
-     }}
+      }
+    }
   end
 
   def forward(pid, %SSH{} = t), do: GenServer.call(pid, {:forward, t})
 
   def handle_call({:forward, %SSH{} = ssh}, _from, %{ls: ls} = state) do
     pid = self()
-    cb = &(send(pid, {:tcp_message, &1}))
+    cb = &send(pid, {:tcp_message, &1})
 
     with {:open, ch} <- SSH.stream_local_forward(ssh, @docker_sock),
-         {:ok, acceptor_pid} <- Task.Supervisor.start_child(Tide.Hosts.TaskSupervisor, fn -> acceptor(ls, cb, pid) end)
-      do
-        {:reply, :ok, %{state | channel: ch, ssh: ssh}}
-      else
-        error -> {:reply, error, state}
+         {:ok, acceptor_pid} <-
+           Task.Supervisor.start_child(Tide.Hosts.TaskSupervisor, fn -> acceptor(ls, cb, pid) end) do
+      {:reply, :ok, %{state | channel: ch, ssh: ssh}}
+    else
+      error -> {:reply, error, state}
     end
   end
 
@@ -44,12 +48,12 @@ defmodule Tide.Hosts.SSH.Tunnel do
   def handle_info({:ssh_cm, _, {:data, channel, _, data}}, %{client: client} = state) do
     Logger.debug("SSH data on channel: #{channel} data: #{data}")
     :ok = TcpProxy.send_msg(client, data)
-  	{:noreply, state}
+    {:noreply, state}
   end
 
   def handle_info({:ssh_cm, _, {:closed, channel}}, state) do
     Logger.debug("SSH closed on channel: #{channel}")
-  	{:noreply, state}
+    {:noreply, state}
   end
 
   def handle_info({:tcp_message, data}, %{ssh: %SSH{conn: conn}, channel: ch} = state) do

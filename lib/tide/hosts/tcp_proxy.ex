@@ -9,9 +9,11 @@ defmodule Tide.Hosts.TcpProxy do
   def accept(socket, callback) do
     {:ok, client_socket} = :gen_tcp.accept(socket)
 
-    {:ok, pid} = Task.Supervisor.start_child(Tide.Hosts.TaskSupervisor, fn ->
-      handle_connection(client_socket, callback)
-    end)
+    {:ok, pid} =
+      Task.Supervisor.start_child(Tide.Hosts.TaskSupervisor, fn ->
+        handle_connection(client_socket, callback)
+      end)
+
     IO.puts("socket accepted")
     :ok = :gen_tcp.controlling_process(client_socket, pid)
 
@@ -23,9 +25,11 @@ defmodule Tide.Hosts.TcpProxy do
 
   defp handle_connection(socket, callback) do
     IO.puts("Handle connection")
+
     case :gen_tcp.recv(socket, 0) do
       {:error, :closed} ->
         IO.puts("Socket is closed")
+
       {:ok, data} ->
         IO.puts("Got data callbacking!")
         callback.(data)

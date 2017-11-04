@@ -4,10 +4,14 @@ defmodule Tide.SSHTest do
 
   setup do
     {:ok, conn} = SSH.connect("192.168.1.1", "foo", password: "foobar", ssh_module: SSHMock)
-    {:ok, %{
+
+    {
+      :ok,
+      %{
         conn: conn,
         ssh_module: SSHMock
-     }}
+      }
+    }
   end
 
   test "returns a connection if connect is successfull", %{conn: conn} do
@@ -20,7 +24,9 @@ defmodule Tide.SSHTest do
   end
 
   test "can open a direct-tcpip channel", %{conn: conn, ssh_module: ssh} do
-    assert {:open, ch} = SSH.direct_tcpip(conn, "192.168.1.1", 80, "192.168.1.2", 80, ssh_module: ssh)
+    assert {:open, ch} =
+             SSH.direct_tcpip(conn, "192.168.1.1", 80, "192.168.1.2", 80, ssh_module: ssh)
+
     assert Kernel.is_number(ch)
   end
 
@@ -31,5 +37,4 @@ defmodule Tide.SSHTest do
   test "closing the channel returns :ok when sucessfull", %{conn: conn, ssh_module: ssh} do
     assert :ok = SSH.close_channel(conn, 0, ssh_module: ssh)
   end
-
 end

@@ -2,6 +2,7 @@ defmodule Tide.Hosts.SSH.Tunnel do
   alias Tide.Hosts.{SSH, TcpProxy}
 
   use GenServer
+  require Logger
 
   @root_dir Application.get_env(:tide_ci, :socket_dir)
   @docker_sock "/var/run/docker.sock"
@@ -15,7 +16,8 @@ defmodule Tide.Hosts.SSH.Tunnel do
     {:ok, %{
         ls: ls,
         channel: nil,
-        clients: []
+        ssh: nil,
+        client: nil
      }}
   end
 
@@ -28,10 +30,32 @@ defmodule Tide.Hosts.SSH.Tunnel do
     with {:open, ch} <- SSH.stream_local_forward(ssh, @docker_sock),
          {:ok, acceptor_pid} <- Task.Supervisor.start_child(Tide.Hosts.TaskSupervisor, fn -> acceptor(ls, cb, pid) end)
       do
-        {:reply, :ok, %{state | channel: ch}}
+        {:reply, :ok, %{state | channel: ch, ssh: ssh}}
       else
         error -> {:reply, error, state}
     end
+  end
+
+  def handle_info({:tcp_client, client}, state) do
+    Logger.debug("TCP Client connetected")
+    {:noreply, %{state | client: client}}
+  end
+
+  def handle_info({:ssh_cm, _, {:data, channel, _, data}}, %{client: client} = state) do
+    Logger.debug("SSH data on channel: #{channel} data: #{data}")
+    :ok = TcpProxy.send_msg(client, data)
+  	{:noreply, state}
+  end
+
+  def handle_info({:ssh_cm, _, {:closed, channel}}, state) do
+    Logger.debug("SSH closed on channel: #{channel}")
+  	{:noreply, state}
+  end
+
+  def handle_info({:tcp_message, data}, %{ssh: %SSH{conn: conn}, channel: ch} = state) do
+    Logger.debug("TCP message received")
+    :ssh_connection.send(conn, ch, data)
+    {:noreply, state}
   end
 
   defp acceptor(socket, callback, pid) do

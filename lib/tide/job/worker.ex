@@ -18,7 +18,6 @@ defmodule Tide.Job.Worker do
     repo = Keyword.get(opts, :repo)
 
     {:ok, _git} = Tide.Repository.ensure(repo)
-
     {:ok, pid, response} =
       repo
       |> Tide.Repository.archive!()
@@ -44,11 +43,6 @@ defmodule Tide.Job.Worker do
 
   def handle_events(events, _from, state) do
     {:noreply, [], process_events(events, state)}
-  end
-
-  def handle_info({_, :stop}, state) do
-    Logger.info("STOPPING CONSUMER")
-    {:stop, :normal, state}
   end
 
   def handle_call(:status, _from, %{status: status}, state), do: {:reply, {:ok, status}, state}

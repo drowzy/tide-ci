@@ -1,5 +1,6 @@
 defmodule Tide.Job do
   alias Tide.Repository, as: Repo
+
   @repo_dir Application.get_env(:tide_ci, :repo_dir)
   @socket_dir Application.get_env(:tide_ci, :socket_dir)
 

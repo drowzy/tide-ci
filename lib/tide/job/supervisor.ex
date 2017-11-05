@@ -9,7 +9,7 @@ defmodule Tide.Job.Supervisor do
   end
 
   def init(_args) do
-    children = [worker(Tide.Job.Worker, [])]
+    children = [worker(Tide.Job.Worker, [], restart: :transient)]
 
     supervise(children, strategy: :simple_one_for_one)
   end

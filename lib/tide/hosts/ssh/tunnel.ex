@@ -46,13 +46,13 @@ defmodule Tide.Hosts.SSH.Tunnel do
   end
 
   def handle_info({:ssh_cm, _, {:data, channel, _, data}}, %{client: client} = state) do
-    Logger.debug("SSH data on channel: #{channel} data: #{data}")
+    Logger.debug("SSH data received on channel: #{channel}")
     :ok = TcpProxy.send_msg(client, data)
     {:noreply, state}
   end
 
   def handle_info({:ssh_cm, _, {:closed, channel}}, state) do
-    Logger.debug("SSH closed on channel: #{channel}")
+    Logger.debug("SSH channel closed: #{channel}")
     {:noreply, state}
   end
 

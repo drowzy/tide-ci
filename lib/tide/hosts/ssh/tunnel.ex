@@ -11,8 +11,9 @@ defmodule Tide.Hosts.SSH.Tunnel do
     GenServer.start_link(__MODULE__, opts, opts)
   end
 
-  def init(_opts) do
-    {:ok, ls} = TcpProxy.listen(Path.join(@root_dir, "/192.168.90.15.sock"))
+  def init(opts) do
+    host = Keyword.get(opts, :host, "127.0.0.1")
+    {:ok, ls} = TcpProxy.listen(Path.join(@root_dir, "/#{host}.sock"))
 
     {
       :ok,

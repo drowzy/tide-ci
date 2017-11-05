@@ -1,4 +1,7 @@
 defmodule Tide.Hosts.TcpProxy do
+  @moduledoc """
+  """
+
   @default_opts [:binary, active: false, reuseaddr: true, packet: 0]
 
   def listen(path) do
@@ -14,7 +17,6 @@ defmodule Tide.Hosts.TcpProxy do
         handle_connection(client_socket, callback)
       end)
 
-    IO.puts("socket accepted")
     :ok = :gen_tcp.controlling_process(client_socket, pid)
 
     client_socket
@@ -24,14 +26,9 @@ defmodule Tide.Hosts.TcpProxy do
   def send_msg(socket, data), do: :gen_tcp.send(socket, data)
 
   defp handle_connection(socket, callback) do
-    IO.puts("Handle connection")
-
     case :gen_tcp.recv(socket, 0) do
-      {:error, :closed} ->
-        IO.puts("Socket is closed")
-
+      {:error, :closed} -> :ok
       {:ok, data} ->
-        IO.puts("Got data callbacking!")
         callback.(data)
         handle_connection(socket, callback)
     end

@@ -25,7 +25,6 @@ defmodule Tide.Hosts.SSH do
       password: String.to_charlist(pass)
     ]
 
-    # {:ok, ssh } = Tide.Hosts.SSH.connect("192.168.90.15", "ubuntu", password: "26ff15b70e7b6c7a7f037b87")
     case ssh.connect(String.to_charlist(host), port, config) do
       {:ok, conn} ->
         {:ok, %__MODULE__{host: host, user: user, port: port, password: pass, conn: conn}}

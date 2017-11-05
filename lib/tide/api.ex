@@ -55,10 +55,8 @@ defmodule Tide.API do
   put "jobs/:id/build" do
     job = Enum.find(@jobs, &(&1["id"] == id))
     %{"name" => name, "path" => path, "uri" => uri} = job["repository"]
-    docker_uri = "http+unix://#{URI.encode_www_form("/tmp/tide/sockets/test.sock")}"
-    repo = %Tide.Repository{name: name, path: path, uri: uri}
-    {:ok, child} = Tide.Job.Supervisor.start_job(repo: repo, uri: docker_uri)
 
+    {:ok, job} = Tide.Job.start(uri, "192.168.90.15")
     send_resp(conn, 201, encode(%{"status" => "started"}))
   end
 

@@ -12,7 +12,7 @@ defmodule Tide.Hosts.SSH.Tunnel do
   end
 
   def init(_opts) do
-    {:ok, ls} = TcpProxy.listen(Path.join(@root_dir, "/test.sock"))
+    {:ok, ls} = TcpProxy.listen(Path.join(@root_dir, "/192.168.90.15.sock"))
 
     {
       :ok,

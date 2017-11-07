@@ -40,8 +40,4 @@ defmodule Tide.Docker.StreamTest do
 
     assert code == 404
   end
-
-  test "Stream should handle :stop sent to info", %{state: state} do
-    assert {:stop, :normal, ^state} = Stream.handle_info(:stop, state)
-  end
 end

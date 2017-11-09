@@ -1,4 +1,6 @@
 defmodule Tide.Key do
+  @behaviour :ssh_client_key_api
+
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, opts)
   end
@@ -7,9 +9,12 @@ defmodule Tide.Key do
     dir = Keyword.get(opts, :dir, "/tmp/tide/keys")
     :ok = File.mkdir_p!(dir)
 
-    {:ok, %{
+    {
+      :ok,
+      %{
         dir: dir
-     }}
+      }
+    }
   end
 
   @doc """
@@ -31,14 +36,16 @@ defmodule Tide.Key do
   def handle_call({:add_key, name, key}, _from, %{dir: dir} = state) do
     path = Path.join(dir, name)
 
-    res = if File.exists?(path) do
-      {:error, :key_exists}
-    else
-      res = case File.write(path, key) do
-        :ok -> :ok
-        reason -> {:error, reason}
+    res =
+      if File.exists?(path) do
+        {:error, :key_exists}
+      else
+        res =
+          case File.write(path, key) do
+            :ok -> :ok
+            reason -> {:error, reason}
+          end
       end
-    end
 
     {:reply, res, state}
   end
@@ -54,5 +61,4 @@ defmodule Tide.Key do
   def handle_call(:get_key_dir, _from, %{dir: dir} = state) do
     {:reply, dir, state}
   end
-
 end

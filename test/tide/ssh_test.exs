@@ -3,7 +3,7 @@ defmodule Tide.SSHTest do
   alias Tide.Hosts.SSH
 
   setup do
-    {:ok, conn} = SSH.connect("192.168.1.1", "foo", password: "foobar", ssh_module: SSHMock)
+    {:ok, conn} = SSH.connect("192.168.1.1", "foo", key_cb: __MODULE__, ssh_module: SSHMock)
 
     {
       :ok,

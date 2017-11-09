@@ -27,7 +27,9 @@ defmodule Tide.Hosts.TcpProxy do
 
   defp handle_connection(socket, callback) do
     case :gen_tcp.recv(socket, 0) do
-      {:error, :closed} -> :ok
+      {:error, :closed} ->
+        :ok
+
       {:ok, data} ->
         callback.(data)
         handle_connection(socket, callback)

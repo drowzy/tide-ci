@@ -33,6 +33,7 @@ defmodule Tide.Mixfile do
       {:cowboy, "~> 1.1.2"},
       {:plug, "~> 1.4.3"},
       {:git_cli, "~> 0.2"},
+      {:ssh_client_key_api, "~> 0.0.1"},
       {:gen_stage, "~> 0.12"},
       {:temp, "~> 0.4", only: :test},
       {:bypass, "~> 0.8", only: :test},

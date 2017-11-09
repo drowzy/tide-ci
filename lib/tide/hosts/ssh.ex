@@ -8,26 +8,25 @@ defmodule Tide.Hosts.SSH do
   @type t :: %__MODULE__{
           host: String.t(),
           user: String.t(),
-          password: String.t(),
           port: integer,
           conn: term
         }
 
   def connect(host, user, opts \\ []) do
-    pass = Keyword.get(opts, :password, nil)
     port = Keyword.get(opts, :port, 22)
     ssh = Keyword.get(opts, :ssh_module, :ssh)
+    key_cb = Keyword.get(opts, :key_cb, default_ssh_module())
 
     config = [
       user_interaction: false,
       silently_accept_hosts: true,
       user: String.to_charlist(user),
-      password: String.to_charlist(pass)
+      key_cb: key_cb
     ]
 
     case ssh.connect(String.to_charlist(host), port, config) do
       {:ok, conn} ->
-        {:ok, %__MODULE__{host: host, user: user, port: port, password: pass, conn: conn}}
+        {:ok, %__MODULE__{host: host, user: user, port: port, conn: conn}}
 
       {:error, reason} ->
         {:error, reason}
@@ -82,5 +81,14 @@ defmodule Tide.Hosts.SSH do
   def close_channel(%__MODULE__{conn: conn}, ch, opts \\ []) do
     ssh = Keyword.get(opts, :ssh_module, :ssh_connection)
     ssh.close(conn, ch)
+  end
+
+  defp default_ssh_module do
+    ssh_dir = Path.expand("~/.ssh")
+
+    SSHClientKeyAPI.with_options(
+      identity: File.open!(Path.join(ssh_dir, "id_rsa")),
+      known_hosts: File.open!(Path.join(ssh_dir, "id_rsa"))
+    )
   end
 end

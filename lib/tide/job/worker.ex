@@ -18,6 +18,7 @@ defmodule Tide.Job.Worker do
     repo = Keyword.get(opts, :repo)
 
     {:ok, _git} = Tide.Repository.ensure(repo)
+
     {:ok, pid, response} =
       repo
       |> Tide.Repository.archive!()

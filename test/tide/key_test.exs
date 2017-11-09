@@ -21,9 +21,9 @@ defmodule Tide.KeyTest do
     dir = Temp.mkdir!("tide-repo")
     {:ok, pid} = Tide.Key.start_link(dir: dir)
 
-    on_exit fn ->
-      File.rm_rf dir
-    end
+    on_exit(fn ->
+      File.rm_rf(dir)
+    end)
 
     {:ok, server: pid, dir: dir}
   end

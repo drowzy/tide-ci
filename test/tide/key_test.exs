@@ -33,12 +33,12 @@ defmodule Tide.KeyTest do
     assert File.exists?(Path.join(dir, "myname"))
   end
 
-  test "can't add a key twice to the same name", %{server: pid, dir: dir} do
+  test "can't add a key twice to the same name", %{server: pid} do
     assert :ok = Tide.Key.add(pid, "myname", @key)
     assert {:error, :key_exists} = Tide.Key.add(pid, "myname", @key)
   end
 
-  test "can retrieve a key", %{server: pid, dir: dir} do
+  test "can retrieve a key", %{server: pid} do
     assert :ok = Tide.Key.add(pid, "key.key", @key)
     {:ok, key} = Tide.Key.retrieve(pid, "key.key")
 

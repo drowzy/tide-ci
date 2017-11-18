@@ -55,12 +55,17 @@ defmodule Tide.API do
   put "jobs/:id/build" do
     job = Enum.find(@jobs, &(&1["id"] == id))
     %{"name" => name, "path" => path, "uri" => uri} = job["repository"]
-
-    {:ok, job} = Tide.Job.start(uri, "192.168.90.15")
+    {:ok, job} = Tide.Job.start(uri, Tide.Hosts.get_executor())
     send_resp(conn, 201, encode(%{"status" => "started"}))
   end
 
   post "jobs" do
+  end
+
+  post "hosts" do
+    %{"ip" => ip, "username" => user} = conn.body_params
+    {:ok, _pid} = Tide.Hosts.connect(ip, user)
+    send_resp(conn, 201, encode(%{"ip" => ip, "status" => "connected"}))
   end
 
   defp encode(body), do: Poison.encode!(body)

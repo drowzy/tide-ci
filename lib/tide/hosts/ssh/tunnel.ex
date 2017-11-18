@@ -7,37 +7,40 @@ defmodule Tide.Hosts.SSH.Tunnel do
   @root_dir Application.get_env(:tide_ci, :socket_dir)
   @docker_sock "/var/run/docker.sock"
 
-  def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, opts, opts)
+  def start_link(ssh, opts \\ []) do
+    GenServer.start_link(__MODULE__, ssh, opts)
   end
 
-  def init(opts) do
-    host = Keyword.get(opts, :host, "127.0.0.1")
+  def init(%SSH{host: host} = ssh) do
     {:ok, ls} = TcpProxy.listen(Path.join(@root_dir, "/#{host}.sock"))
 
+    send(self(), :forward)
     {
       :ok,
       %{
         ls: ls,
         channel: nil,
-        ssh: nil,
+        ssh: ssh,
         client: nil
       }
     }
   end
 
-  def forward(pid, %SSH{} = t), do: GenServer.call(pid, {:forward, t})
+  def handle_call(:forward_host, _from, %{ssh: ssh} = state), do: {:reply, ssh.host, state}
 
-  def handle_call({:forward, %SSH{} = ssh}, _from, %{ls: ls} = state) do
+  def handle_info(:forward, %{ls: ls, ssh: ssh} = state) do
     pid = self()
     cb = &send(pid, {:tcp_message, &1})
 
     with {:open, ch} <- SSH.stream_local_forward(ssh, @docker_sock),
-         {:ok, acceptor_pid} <-
+         {:ok, _acceptor_pid} <-
            Task.Supervisor.start_child(Tide.Hosts.TaskSupervisor, fn -> acceptor(ls, cb, pid) end) do
-      {:reply, :ok, %{state | channel: ch, ssh: ssh}}
+      {:noreply, %{state | channel: ch, ssh: ssh}}
     else
-      error -> {:reply, error, state}
+      error ->
+        Logger.error("SSH forward to #{ssh.host} failed with #{inspect error}")
+        Process.send_after(self(), :forward, 1000)
+        {:noreply, state}
     end
   end
 

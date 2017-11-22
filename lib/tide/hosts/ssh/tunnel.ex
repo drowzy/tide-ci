@@ -8,11 +8,12 @@ defmodule Tide.Hosts.SSH.Tunnel do
   @docker_sock "/var/run/docker.sock"
 
   def start_link(ssh, opts \\ []) do
-    GenServer.start_link(__MODULE__, ssh, opts)
+    GenServer.start_link(__MODULE__, [ssh, opts], opts)
   end
 
-  def init(%SSH{host: host} = ssh) do
-    {:ok, ls} = TcpProxy.listen(Path.join(@root_dir, "/#{host}.sock"))
+  def init([%SSH{host: host} = ssh, opts]) do
+    socket_dir = Keyword.get(opts, :socket_dir, @root_dir)
+    {:ok, ls} = TcpProxy.listen(Path.join(socket_dir, "/#{host}.sock"))
 
     send(self(), :forward)
     {
@@ -25,6 +26,8 @@ defmodule Tide.Hosts.SSH.Tunnel do
       }
     }
   end
+
+  def get_host(pid), do: GenServer.call(pid, :forward_host)
 
   def handle_call(:forward_host, _from, %{ssh: ssh} = state), do: {:reply, ssh.host, state}
 

@@ -24,6 +24,8 @@ defmodule Tide.Job.Worker do
       |> Tide.Repository.archive!()
       |> start_build(uri)
 
+    Process.flag(:trap_exit, true)
+
     {
       :consumer,
       %{
@@ -54,15 +56,15 @@ defmodule Tide.Job.Worker do
     {:reply, {:ok, stream}, state}
   end
 
-  defp process_events(events, state), do: List.foldl(events, state, &process_event/2)
-
-  defp process_event({:chunk, chunk}, %{log: log} = state) do
-    Logger.info("Log :: #{inspect(chunk)}")
-    %{state | log: [chunk | log], status: :building}
+  def handle_info({:EXIT, _pid, :normal}, state) do
   end
 
+  defp process_events(events, state), do: List.foldl(events, state, &process_event/2)
+  defp process_event({:chunk, chunk}, %{log: log} = state) do
+    Logger.info("Log HEJ:: #{inspect(chunk)}")
+    %{state | log: [chunk | log], status: :building}
+  end
   defp process_event({:headers, _headers}, state), do: state
-
   defp process_event({:status, code}, state) do
     case code do
       200 -> %{state | status: :started}

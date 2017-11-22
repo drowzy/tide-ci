@@ -6,6 +6,7 @@ defmodule Tide.Job.MessageTest do
   @aux %{"aux" => %{"ID" => "sha256:50dd4e092455f5eee053cc3549f80d467b41379b8b4e00d12b561001f28b20e9"}}
   @stream %{"stream" => " ---> 50dd4e092455\n"}
   @stream_list [
+    %{"stream" => "Successfully built 50dd4e092455\n"},
     %{"stream" => "Step 4/4 : RUN apt-get -y install vim git"},
     %{"stream" => "Step 3/4 : RUN apt-get update\n"},
     %{"stream" => "Step 2/4 : RUN mkdir demo\n"},
@@ -35,5 +36,13 @@ defmodule Tide.Job.MessageTest do
     |> Enum.join("")
 
     assert expected == Message.stringify(@stream_list)
+  end
+
+  test "#success? with successfull build log" do
+    assert Message.success?(@stream_list)
+  end
+
+  test "#success? with an error" do
+    assert not Message.success?([%{"stream" => "Error building 50dd4e092455"}])
   end
 end

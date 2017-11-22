@@ -7,6 +7,8 @@ defmodule Tide.Job.Worker do
   use GenStage
   require Logger
 
+  alias Tide.Job.Message
+
   @doc """
   """
   def start_link(opts \\ []) do
@@ -57,11 +59,18 @@ defmodule Tide.Job.Worker do
   end
 
   def handle_info({:EXIT, _pid, :normal}, state) do
+    Logger.debug("Job completed with success : #{Message.success?(state.log)}")
+    {:stop, :normal, state}
+  end
+
+  def handle_info({:EXIT, _pid, reason}, state) do
+    Logger.debug("Job exited with error: #{inspect reason}")
+    {:stop, :normal, state}
   end
 
   defp process_events(events, state), do: List.foldl(events, state, &process_event/2)
   defp process_event({:chunk, chunk}, %{log: log} = state) do
-    Logger.info("Log HEJ:: #{inspect(chunk)}")
+    Logger.info("Log :: #{inspect(chunk)}")
     %{state | log: [chunk | log], status: :building}
   end
   defp process_event({:headers, _headers}, state), do: state

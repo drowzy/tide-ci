@@ -4,6 +4,8 @@ defmodule Tide.API do
   use Plug.Router
   require Logger
 
+  alias Tide.Schemas.Host
+
   plug(Plug.Logger)
   plug(Plug.Parsers, parsers: [:json], json_decoder: Poison)
   plug(:match)
@@ -63,11 +65,22 @@ defmodule Tide.API do
   end
 
   post "hosts" do
-    %{"ip" => ip, "username" => user} = conn.body_params
-    {:ok, _pid} = Tide.Hosts.connect(ip, user)
-    send_resp(conn, 201, encode(%{"ip" => ip, "status" => "connected"}))
+    with {:ok, %Host{id: id, hostname: hostname}} <- Host.create(conn.body_params),
+      %{"user" => user} <- conn.body_params,
+      {:ok, _pid} = Tide.Hosts.connect(hostname, user) do
+        send_resp(conn, 201, encode(Map.merge(conn.body_params, %{"id" => id})))
+      else
+        {:error, %Ecto.Changeset{errors: errors}} ->
+          Logger.debug("Request failed with #{inspect errors}")
+          send_resp(conn, 422, encode_errors(errors))
+        {:error, reason} ->
+          send_resp(conn, 422, encode(%{message: "unknown"}))
+      end
   end
 
   defp encode(body), do: Poison.encode!(body)
+  defp encode_errors(errors) do
+    encode(%{message: "ecto errors"})
+  end
   defp decode(body), do: Poison.decode!(body)
 end

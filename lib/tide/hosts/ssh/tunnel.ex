@@ -5,14 +5,16 @@ defmodule Tide.Hosts.SSH.Tunnel do
   require Logger
 
   @root_dir Application.get_env(:tide_ci, :socket_dir)
-  @docker_sock "/var/run/docker.sock"
+  @forward_sock "/var/run/docker.sock"
 
   def start_link(ssh, opts \\ []) do
-    GenServer.start_link(__MODULE__, [ssh, opts], opts)
+    GenServer.start_link(__MODULE__, {ssh, opts}, opts)
   end
 
-  def init([%SSH{host: host} = ssh, opts]) do
+  def init({%SSH{host: host} = ssh, opts}) do
     socket_dir = Keyword.get(opts, :socket_dir, @root_dir)
+    forward_sock = Keyword.get(opts, :forward_sock, @forward_sock)
+
     {:ok, ls} = TcpProxy.listen(Path.join(socket_dir, "/#{host}.sock"))
 
     send(self(), :forward)

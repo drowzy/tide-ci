@@ -5,7 +5,7 @@ defmodule Tide.Hosts.SSH.Tunnel do
   require Logger
 
   @root_dir Application.get_env(:tide_ci, :socket_dir)
-  @forward_sock "/var/run/docker.sock"
+  @target_sock "/var/run/docker.sock"
 
   def start_link(ssh, opts \\ []) do
     GenServer.start_link(__MODULE__, {ssh, opts}, opts)
@@ -13,7 +13,7 @@ defmodule Tide.Hosts.SSH.Tunnel do
 
   def init({%SSH{host: host} = ssh, opts}) do
     socket_dir = Keyword.get(opts, :socket_dir, @root_dir)
-    forward_sock = Keyword.get(opts, :forward_sock, @forward_sock)
+    target_sock = Keyword.get(opts, :forward_sock, @target_sock)
 
     {:ok, ls} = TcpProxy.listen(Path.join(socket_dir, "/#{host}.sock"))
 
@@ -24,7 +24,8 @@ defmodule Tide.Hosts.SSH.Tunnel do
         ls: ls,
         channel: nil,
         ssh: ssh,
-        client: nil
+        target_sock: target_sock,
+        client: nil,
       }
     }
   end
@@ -33,11 +34,11 @@ defmodule Tide.Hosts.SSH.Tunnel do
 
   def handle_call(:forward_host, _from, %{ssh: ssh} = state), do: {:reply, ssh.host, state}
 
-  def handle_info(:forward, %{ls: ls, ssh: ssh} = state) do
+  def handle_info(:forward, %{ls: ls, ssh: ssh, target_sock: target_sock} = state) do
     pid = self()
     cb = &send(pid, {:tcp_message, &1})
 
-    with {:open, ch} <- SSH.stream_local_forward(ssh, @docker_sock),
+    with {:open, ch} <- SSH.stream_local_forward(ssh, target_sock),
          {:ok, _acceptor_pid} <-
            Task.Supervisor.start_child(Tide.Hosts.TaskSupervisor, fn -> acceptor(ls, cb, pid) end) do
       {:noreply, %{state | channel: ch, ssh: ssh}}

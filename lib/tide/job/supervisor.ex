@@ -14,8 +14,8 @@ defmodule Tide.Job.Supervisor do
     supervise(children, strategy: :simple_one_for_one)
   end
 
-  def start_job(opts) do
-    Supervisor.start_child(__MODULE__, [opts])
+  def start_job(id, name, opts) do
+    Supervisor.start_child(__MODULE__, [id, Keyword.merge(opts, name: name)])
   end
 
   def get_children, do: Supervisor.which_children(__MODULE__)

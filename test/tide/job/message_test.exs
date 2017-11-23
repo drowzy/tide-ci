@@ -26,14 +26,13 @@ defmodule Tide.Job.MessageTest do
   end
 
   test "#stringify empty list" do
-    assert "" == Message.stringify([])
+    assert [] == Message.stringify([])
   end
 
   test "#stringify list" do
     expected = @stream_list
     |> Enum.map(&(Map.get(&1, "stream")))
     |> Enum.reverse
-    |> Enum.join("")
 
     assert expected == Message.stringify(@stream_list)
   end

@@ -36,7 +36,7 @@ defmodule Tide.Mixfile do
       {:ssh_client_key_api, "~> 0.0.1"},
       {:gen_stage, "~> 0.12"},
       {:ecto, "~> 2.1"},
-      {:ecto_mnesia, "~> 0.9.0"},
+      {:postgrex, ">= 0.0.0"},
       {:temp, "~> 0.4", only: :test},
       {:bypass, "~> 0.8", only: :test},
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

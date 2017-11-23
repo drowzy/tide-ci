@@ -48,7 +48,8 @@ defmodule Tide.Docker.Stream do
     {:stop, {:error, reason}, state}
   end
 
-  def handle_info(%HTTPoison.AsyncEnd{}, %{chunks: chunks, demand: demand} = state) do
+  def handle_info(%HTTPoison.AsyncEnd{} = end_, %{chunks: chunks, demand: demand} = state) do
+    Logger.info("Reached the end of docker stream, sending done #{inspect end_}")
     {events, new_chunks} = Enum.split(chunks, demand)
 
     GenStage.async_info(self(), {:producer, :done})

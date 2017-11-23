@@ -8,14 +8,15 @@ defmodule Tide.Job.Worker do
   require Logger
 
   alias Tide.Job.Message
+  alias Tide.Schemas.Job, as: Job
 
   @doc """
   """
-  def start_link(opts \\ []) do
-    GenStage.start_link(__MODULE__, opts, name: __MODULE__)
+  def start_link(id, opts \\ []) do
+    GenStage.start_link(__MODULE__, {id, opts}, name: __MODULE__)
   end
 
-  def init(opts) do
+  def init({id, opts}) do
     uri = Keyword.get(opts, :uri)
     repo = Keyword.get(opts, :repo)
 
@@ -31,6 +32,7 @@ defmodule Tide.Job.Worker do
     {
       :consumer,
       %{
+        id: id,
         repo: repo,
         uri: uri,
         response: response,
@@ -58,13 +60,18 @@ defmodule Tide.Job.Worker do
     {:reply, {:ok, stream}, state}
   end
 
-  def handle_info({:EXIT, _pid, :normal}, state) do
-    Logger.debug("Job completed with success : #{Message.success?(state.log)}")
-    {:stop, :normal, state}
-  end
+  def handle_info({:EXIT, pid, reason}, %{id: id, log: log} = state) do
+    Logger.debug("Exiting proc: #{inspect pid} me #{inspect self()}")
+    success = Message.success?(log)
+    Logger.debug("Job completed with status #{inspect reason} : #{success}")
 
-  def handle_info({:EXIT, _pid, reason}, state) do
-    Logger.debug("Job exited with error: #{inspect reason}")
+    Logger.debug("Logs #{inspect Message.stringify(log)}")
+
+    case persist(id, success, state) do
+      {:ok, _resource} -> Logger.debug("Job #{id} stored")
+      {:error, reason} -> Logger.error("Could not persist Job #{id} #{inspect reason}")
+    end
+
     {:stop, :normal, state}
   end
 
@@ -79,6 +86,14 @@ defmodule Tide.Job.Worker do
       200 -> %{state | status: :started}
       _code -> %{state | status: :failed}
     end
+  end
+
+  defp persist(id, success, %{log: log}) do
+    status = if success, do: "success", else: "failure"
+
+    id
+    |> Job.get_job()
+    |> Job.update_job(%{status: status, log: Message.stringify(log)})
   end
 
   defp start_build(tar_stream, uri) do

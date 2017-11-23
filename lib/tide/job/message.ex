@@ -9,7 +9,6 @@ defmodule Tide.Job.Message do
     message
     |> Enum.map(&stringify/1)
     |> Enum.reverse
-    |> Enum.join("")
   end
   def stringify(%{"aux" => message}) do
     message

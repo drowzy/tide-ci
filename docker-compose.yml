@@ -1,0 +1,14 @@
+version: '2'
+services:
+  postgres-tide:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    volumes:
+      - tide-postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+volumes:
+  tide-postgres-data:
+    driver: local

@@ -61,26 +61,29 @@ defmodule Tide.Job.Worker do
   end
 
   def handle_info({:EXIT, pid, reason}, %{id: id, log: log} = state) do
-    Logger.debug("Exiting proc: #{inspect pid} me #{inspect self()}")
+    Logger.debug("Exiting proc: #{inspect(pid)} me #{inspect(self())}")
     success = Message.success?(log)
-    Logger.debug("Job completed with status #{inspect reason} : #{success}")
+    Logger.debug("Job completed with status #{inspect(reason)} : #{success}")
 
-    Logger.debug("Logs #{inspect Message.stringify(log)}")
+    Logger.debug("Logs #{inspect(Message.stringify(log))}")
 
     case persist(id, success, state) do
       {:ok, _resource} -> Logger.debug("Job #{id} stored")
-      {:error, reason} -> Logger.error("Could not persist Job #{id} #{inspect reason}")
+      {:error, reason} -> Logger.error("Could not persist Job #{id} #{inspect(reason)}")
     end
 
     {:stop, :normal, state}
   end
 
   defp process_events(events, state), do: List.foldl(events, state, &process_event/2)
+
   defp process_event({:chunk, chunk}, %{log: log} = state) do
     Logger.info("Log :: #{inspect(chunk)}")
     %{state | log: [chunk | log], status: :building}
   end
+
   defp process_event({:headers, _headers}, state), do: state
+
   defp process_event({:status, code}, state) do
     case code do
       200 -> %{state | status: :started}

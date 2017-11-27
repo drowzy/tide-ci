@@ -22,7 +22,7 @@ defmodule Tide.Hosts.Supervisor do
   def find_host(name) do
     get_hosts()
     |> Enum.find(fn {%{name: process_name}, _, _, _} ->
-      name == process_name
-    end)
+         name == process_name
+       end)
   end
 end

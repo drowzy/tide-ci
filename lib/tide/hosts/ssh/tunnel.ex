@@ -18,6 +18,7 @@ defmodule Tide.Hosts.SSH.Tunnel do
     {:ok, ls} = TcpProxy.listen(Path.join(socket_dir, "/#{host}.sock"))
 
     send(self(), :forward)
+
     {
       :ok,
       %{
@@ -25,7 +26,7 @@ defmodule Tide.Hosts.SSH.Tunnel do
         channel: nil,
         ssh: ssh,
         target_sock: target_sock,
-        client: nil,
+        client: nil
       }
     }
   end
@@ -44,7 +45,7 @@ defmodule Tide.Hosts.SSH.Tunnel do
       {:noreply, %{state | channel: ch, ssh: ssh}}
     else
       error ->
-        Logger.error("SSH forward to #{ssh.host} failed with #{inspect error}")
+        Logger.error("SSH forward to #{ssh.host} failed with #{inspect(error)}")
         Process.send_after(self(), :forward, 1000)
         {:noreply, state}
     end

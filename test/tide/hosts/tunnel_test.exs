@@ -8,6 +8,7 @@ defmodule Tide.Hosts.TunnelTest do
       ssh: nil,
       client: nil
     }
+
     {:ok, %{state: state}}
   end
 
@@ -17,6 +18,7 @@ defmodule Tide.Hosts.TunnelTest do
     assert {:noreply, new_state} = Tide.Hosts.SSH.Tunnel.handle_info({:tcp_client, ref}, state)
     assert ref == new_state.client
   end
+
   # setup do
   #   Temp.track!()
   #   dir = Temp.mkdir!("hosts")

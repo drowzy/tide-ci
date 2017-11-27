@@ -32,6 +32,7 @@ defmodule Tide.Hosts.SSH do
         {:error, reason}
     end
   end
+
   #
   def stream_local_forward(%__MODULE__{conn: conn}, socket_path, opts \\ []) do
     ssh = Keyword.get(opts, :ssh_module, :ssh_connection_handler)

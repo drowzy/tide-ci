@@ -12,8 +12,11 @@ defmodule Tide.Job do
     repo = %Repo{name: name, path: tmp_dir(name), uri: repo_uri}
 
     case Job.create_job(%{status: "pending"}) do
-      {:ok, %Job{id: id}} -> Tide.Job.Supervisor.start_job(id, via_tuple(id), repo: repo, uri: socket_uri(host))
-      {:error, reason} -> {:error, reason}
+      {:ok, %Job{id: id}} ->
+        Tide.Job.Supervisor.start_job(id, via_tuple(id), repo: repo, uri: socket_uri(host))
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -22,9 +25,8 @@ defmodule Tide.Job do
   def progress(name) do
     name
     |> via_tuple()
-    |> Tide.Job.Worker.status
+    |> Tide.Job.Worker.status()
   end
-
 
   defp via_tuple(job_id) do
     {:via, Registry, {Job.Registry, job_id}}

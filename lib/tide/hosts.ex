@@ -29,7 +29,7 @@ defmodule Tide.Hosts do
   end
 
   def get_executor do
-    [{_, pid, _, _} | rest] = Tide.Hosts.Supervisor.get_hosts
+    [{_, pid, _, _} | rest] = Tide.Hosts.Supervisor.get_hosts()
 
     GenServer.call(pid, :forward_host)
   end

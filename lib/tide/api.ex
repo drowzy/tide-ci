@@ -66,21 +66,24 @@ defmodule Tide.API do
 
   post "hosts" do
     with {:ok, %Host{id: id, hostname: hostname}} <- Host.create(conn.body_params),
-      %{"user" => user} <- conn.body_params,
-      {:ok, _pid} = Tide.Hosts.connect(hostname, user) do
-        send_resp(conn, 201, encode(Map.merge(conn.body_params, %{"id" => id})))
-      else
-        {:error, %Ecto.Changeset{errors: errors}} ->
-          Logger.debug("Request failed with #{inspect errors}")
-          send_resp(conn, 422, encode_errors(errors))
-        {:error, reason} ->
-          send_resp(conn, 422, encode(%{message: "unknown"}))
-      end
+         %{"user" => user} <- conn.body_params,
+         {:ok, _pid} = Tide.Hosts.connect(hostname, user) do
+      send_resp(conn, 201, encode(Map.merge(conn.body_params, %{"id" => id})))
+    else
+      {:error, %Ecto.Changeset{errors: errors}} ->
+        Logger.debug("Request failed with #{inspect(errors)}")
+        send_resp(conn, 422, encode_errors(errors))
+
+      {:error, reason} ->
+        send_resp(conn, 422, encode(%{message: "unknown"}))
+    end
   end
 
   defp encode(body), do: Poison.encode!(body)
+
   defp encode_errors(errors) do
     encode(%{message: "ecto errors"})
   end
+
   defp decode(body), do: Poison.decode!(body)
 end

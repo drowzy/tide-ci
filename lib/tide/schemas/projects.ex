@@ -11,12 +11,12 @@ defmodule Tide.Schemas.Project do
   @derive {Poison.Encoder, only: [:id, :owner, :name, :description, :slug, :vcs_url]}
 
   schema "projects" do
-    field :name, :string
-    field :slug, :string
-    field :owner, :string
-    field :vcs_url, :string
-    field :description, :string
-    has_many :jobs, Tide.Schemas.Job
+    field(:name, :string)
+    field(:slug, :string)
+    field(:owner, :string)
+    field(:vcs_url, :string)
+    field(:description, :string)
+    has_many(:jobs, Tide.Schemas.Job)
 
     timestamps()
   end

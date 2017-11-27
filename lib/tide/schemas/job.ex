@@ -11,8 +11,8 @@ defmodule Tide.Schemas.Job do
   @derive {Poison.Encoder, only: [:id, :log, :status]}
 
   schema "jobs" do
-    field :status, :string
-    field :log, {:array, :string}, default: []
+    field(:status, :string)
+    field(:log, {:array, :string}, default: [])
 
     timestamps
   end
@@ -28,13 +28,17 @@ defmodule Tide.Schemas.Job do
   end
 
   def list_jobs, do: Repo.all(Job)
+
   def list_pending do
     Repo.all(
-      from j in Job,
-      where: j.status == "pending",
-      order_by: [desc: j.inserted_at]
+      from(
+        j in Job,
+        where: j.status == "pending",
+        order_by: [desc: j.inserted_at]
+      )
     )
   end
+
   def get_job(id), do: Repo.get(Job, id)
   def get_job!(id), do: Repo.get!(Job, id)
 

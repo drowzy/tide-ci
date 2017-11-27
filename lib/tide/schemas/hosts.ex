@@ -11,10 +11,10 @@ defmodule Tide.Schemas.Host do
   @derive {Poison.Encoder, only: [:id, :hostname, :name, :description, :is_active]}
 
   schema "hosts" do
-    field :hostname, :string
-    field :name, :string
-    field :description, :string
-    field :is_active, :boolean, default: true
+    field(:hostname, :string)
+    field(:name, :string)
+    field(:description, :string)
+    field(:is_active, :boolean, default: true)
 
     timestamps
   end
@@ -26,6 +26,7 @@ defmodule Tide.Schemas.Host do
     |> cast(params, @fields)
     |> validate_required([:hostname, :is_active])
     |> unique_constraint(:hostname)
+
     # TODO validate hostname is a URI/IP
   end
 

@@ -29,8 +29,7 @@ config :tide_ci, TideWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "TlroZNtpLsEV0IVdcc4CA043zbsuvMOeFMLhnDVCUGIMUfSxpdMu9cYtbV5mDF3c",
   render_errors: [view: TideWeb.ErrorView, accepts: ~w(json)],
-  pubsub: [name: Tide.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Tide.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,

@@ -3,7 +3,9 @@ defmodule Tide.Job.MessageTest do
 
   alias Tide.Job.Message
 
-  @aux %{"aux" => %{"ID" => "sha256:50dd4e092455f5eee053cc3549f80d467b41379b8b4e00d12b561001f28b20e9"}}
+  @aux %{
+    "aux" => %{"ID" => "sha256:50dd4e092455f5eee053cc3549f80d467b41379b8b4e00d12b561001f28b20e9"}
+  }
   @stream %{"stream" => " ---> 50dd4e092455\n"}
   @stream_list [
     %{"stream" => "Successfully built 50dd4e092455\n"},
@@ -30,9 +32,10 @@ defmodule Tide.Job.MessageTest do
   end
 
   test "#stringify list" do
-    expected = @stream_list
-    |> Enum.map(&(Map.get(&1, "stream")))
-    |> Enum.reverse
+    expected =
+      @stream_list
+      |> Enum.map(&Map.get(&1, "stream"))
+      |> Enum.reverse()
 
     assert expected == Message.stringify(@stream_list)
   end

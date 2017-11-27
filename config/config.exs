@@ -25,17 +25,22 @@ config :tide_ci,
   socket_dir: "/tmp/tide/sockets",
   repo_dir: "/tmp/tide/repositories"
 
+config :tide_ci, TideWeb.Endpoint,
+  url: [host: "localhost"],
+  secret_key_base: "TlroZNtpLsEV0IVdcc4CA043zbsuvMOeFMLhnDVCUGIMUfSxpdMu9cYtbV5mDF3c",
+  render_errors: [view: TideWeb.ErrorView, accepts: ~w(json)],
+  pubsub: [name: Tide.PubSub,
+           adapter: Phoenix.PubSub.PG2]
+
+# Configures Elixir's Logger
+config :logger, :console,
+  format: "$time $metadata[$level] $message\n",
+  metadata: [:request_id]
+
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last).
-config :tide_ci, ecto_repos: [Tide.Repo]
-config :tide_ci, Tide.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  database: "tide_dev",
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost"
 
 import_config "#{Mix.env()}.exs"

@@ -26,3 +26,21 @@ use Mix.Config
 # by uncommenting the line below and defining dev.exs, test.exs and such.
 # Configuration from the imported file will override the ones defined
 # here (which is why it is important to import them last)
+
+# We don't run a server during test. If one is required,
+# you can enable the server option below.
+config :tide_ci, TideWeb.Endpoint,
+  http: [port: 4001],
+  server: false
+
+# Print only warnings and errors during test
+config :logger, level: :warn
+
+# Configure your database
+config :tide_ci, Tide.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
+  database: "tide_test",
+  hostname: "localhost",
+  pool: Ecto.Adapters.SQL.Sandbox

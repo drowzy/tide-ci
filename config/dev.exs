@@ -21,6 +21,27 @@ use Mix.Config
 #     config :logger, level: :info
 #
 
+config :logger, :console, format: "[$level] $message\n"
+
+# Set a higher stacktrace during development. Avoid configuring such
+# in production as building large stacktraces may be expensive.
+config :phoenix, :stacktrace_depth, 20
+
+config :tide_ci, TideWeb.Endpoint,
+  http: [port: 4000],
+  debug_errors: true,
+  code_reloader: true,
+  check_origin: false,
+  watchers: []
+
+config :tide_ci, ecto_repos: [Tide.Repo]
+config :tide_ci, Tide.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  database: "tide_dev",
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost"
+
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.

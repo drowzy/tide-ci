@@ -8,6 +8,7 @@ defmodule Tide.Mixfile do
       elixir: "~> 1.5",
       start_permanent: Mix.env() == :prod,
       elixirc_paths: elixirc_paths(Mix.env()),
+      compilers: [:phoenix, :gettext] ++ Mix.compilers,
       deps: deps()
     ]
   end
@@ -15,7 +16,7 @@ defmodule Tide.Mixfile do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger, :ssh],
+      extra_applications: [:logger, :ssh, :runtime_tools],
       mod: {Tide, []}
     ]
   end
@@ -33,6 +34,10 @@ defmodule Tide.Mixfile do
       {:cowboy, "~> 1.1.2"},
       {:plug, "~> 1.4.3"},
       {:git_cli, "~> 0.2"},
+      {:phoenix, "~> 1.3.0"},
+      {:phoenix_pubsub, "~> 1.0"},
+      {:phoenix_ecto, "~> 3.2"},
+      {:gettext, "~> 0.11"},
       {:ssh_client_key_api, "~> 0.0.1"},
       {:gen_stage, "~> 0.12"},
       {:ecto, "~> 2.1"},

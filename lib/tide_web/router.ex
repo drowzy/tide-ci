@@ -8,6 +8,7 @@ defmodule TideWeb.Router do
   scope "/api/v1", TideWeb do
     pipe_through(:api)
 
-    resources("/hosts", HostsController)
+    resources("/hosts", HostController)
+    resources("/projects", ProjectController)
   end
 end

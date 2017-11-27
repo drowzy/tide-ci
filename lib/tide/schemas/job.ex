@@ -14,6 +14,7 @@ defmodule Tide.Schemas.Job do
     field(:status, :string)
     field(:log, {:array, :string}, default: [])
 
+    belongs_to :project, Tide.Schemas.Project
     timestamps
   end
 
@@ -60,9 +61,5 @@ defmodule Tide.Schemas.Job do
 
   def delete_all do
     Repo.delete_all(Job)
-  end
-
-  defp set_id(%Job{} = job) do
-    Map.put(job, :id, Ecto.UUID.generate())
   end
 end

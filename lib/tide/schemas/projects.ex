@@ -24,10 +24,14 @@ defmodule Tide.Schemas.Project do
   @fields ~w(name owner vcs_url description)
 
   def insert_changeset(data, params \\ %{}) do
-    %Project{name: name, owner: owner} = project = common_changeset(data, params)
-    slug = generate_slug(owner, name)
+    case common_changeset(data, params) do
+      %Ecto.Changeset{changes: %{name: name, owner: owner}} = project ->
+        slug = generate_slug(owner, name)
+        put_change(project, :slug, slug)
 
-    put_change(project, :slug, slug)
+      %Ecto.Changeset{errors: _errors} = change ->
+        change
+    end
   end
 
   def update_changeset(data, params \\ %{}) do
@@ -50,15 +54,17 @@ defmodule Tide.Schemas.Project do
     |> Repo.insert()
   end
 
-  def update(%Project{} = job, attrs) do
-    job
+  def update(%Project{} = project, attrs) do
+    project
     |> update_changeset(attrs)
     |> Repo.update()
   end
 
-  def delete(%Project{} = job) do
-    Repo.delete(job)
+  def delete(%Project{} = project) do
+    Repo.delete(project)
   end
+
+  def delete!(%Project{} = project), do: Repo.delete!(project)
 
   def delete do
     Repo.delete_all(Project)

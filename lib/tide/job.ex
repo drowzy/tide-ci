@@ -1,22 +1,23 @@
 defmodule Tide.Job do
   alias Tide.Repository, as: Repo
   alias Tide.Schemas.Job
+  alias Tide.Schemas.Project
 
   @repo_dir Application.get_env(:tide_ci, :repo_dir)
   @socket_dir Application.get_env(:tide_ci, :socket_dir)
 
   @doc """
   """
-  def start(repo_uri, host) do
+  def start(%Project{vcs_url: repo_uri, id: project_id}, host) do
     name = name_from_uri(repo_uri)
     repo = %Repo{name: name, path: tmp_dir(name), uri: repo_uri}
 
-    case Job.create_job(%{status: "pending"}) do
-      {:ok, %Job{id: id}} ->
-        Tide.Job.Supervisor.start_job(id, via_tuple(id), repo: repo, uri: socket_uri(host))
-
-      {:error, reason} ->
-        {:error, reason}
+    with {:ok, %Job{id: id} = job} <- Job.create_job(%{status: "pending", project_id: project_id}),
+         :ok <-
+           Tide.Job.Supervisor.start_job(id, via_tuple(id), repo: repo, uri: socket_uri(host)) do
+      {:ok, job}
+    else
+      {:error, reason} -> {:error, reason}
     end
   end
 

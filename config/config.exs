@@ -31,6 +31,8 @@ config :tide_ci, TideWeb.Endpoint,
   render_errors: [view: TideWeb.ErrorView, accepts: ~w(json)],
   pubsub: [name: Tide.PubSub, adapter: Phoenix.PubSub.PG2]
 
+config :tide_ci, ecto_repos: [Tide.Repo]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

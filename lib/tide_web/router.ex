@@ -9,6 +9,9 @@ defmodule TideWeb.Router do
     pipe_through(:api)
 
     resources("/hosts", HostController)
-    resources("/projects", ProjectController)
+
+    resources "/projects", ProjectController do
+      resources("/jobs", JobController)
+    end
   end
 end

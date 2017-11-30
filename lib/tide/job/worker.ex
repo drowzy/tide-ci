@@ -8,7 +8,7 @@ defmodule Tide.Job.Worker do
   require Logger
 
   alias Tide.Job.Message
-  alias Tide.Schemas.Job, as: Job
+  alias Tide.Schemas.Job
 
   @doc """
   """
@@ -95,7 +95,7 @@ defmodule Tide.Job.Worker do
     status = if success, do: "success", else: "failure"
 
     id
-    |> Job.get_job()
+    |> Job.get!()
     |> Job.update_job(%{status: status, log: Message.stringify(log)})
   end
 

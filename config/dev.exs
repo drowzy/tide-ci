@@ -34,8 +34,6 @@ config :tide_ci, TideWeb.Endpoint,
   check_origin: false,
   watchers: []
 
-config :tide_ci, ecto_repos: [Tide.Repo]
-
 config :tide_ci, Tide.Repo,
   adapter: Ecto.Adapters.Postgres,
   database: "tide_dev",

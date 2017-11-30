@@ -14,7 +14,7 @@ defmodule Tide.Schemas.Job do
     field(:status, :string)
     field(:log, {:array, :string}, default: [])
 
-    belongs_to :project, Tide.Schemas.Project
+    belongs_to(:project, Tide.Schemas.Project)
     timestamps
   end
 
@@ -28,7 +28,7 @@ defmodule Tide.Schemas.Job do
     |> validate_inclusion(:status, @statuses)
   end
 
-  def list_jobs, do: Repo.all(Job)
+  def list, do: Repo.all(Job)
 
   def list_pending do
     Repo.all(
@@ -40,8 +40,12 @@ defmodule Tide.Schemas.Job do
     )
   end
 
-  def get_job(id), do: Repo.get(Job, id)
-  def get_job!(id), do: Repo.get!(Job, id)
+  def list_jobs(project_id) do
+    Repo.all(from(j in Job, where: j.project_id == ^project_id))
+  end
+
+  def get(id), do: Repo.get(Job, id)
+  def get!(id), do: Repo.get!(Job, id)
 
   def create_job(attrs \\ %{}) do
     %Job{}

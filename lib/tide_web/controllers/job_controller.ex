@@ -2,23 +2,24 @@ defmodule TideWeb.JobController do
   use TideWeb, :controller
 
   alias Tide.Schemas.Job
+  alias Tide.Schemas.Project
+  alias Tide.Hosts
 
   plug(:find_job when action in [:show, :update, :delete])
+  plug(:load_project when action in [:index, :create])
 
-  def index(conn, _params) do
-    job = Job.list()
+  def index(conn = %Plug.Conn{assigns: %{project: project}}, _params) do
+    job = Job.list_jobs(project.id)
 
     conn
     |> put_status(:ok)
     |> json(job)
   end
 
-  def create(conn, %{"user" => user} = params) do
+  def create(conn = %Plug.Conn{assigns: %{project: project}}, params) do
     {status, entity} =
-      with {:ok, %Job{id: id, name: name} = job} <- Job.create(params),
-           {:ok, _pid} = Tide.Job.start(jobname, user) do
-        {:created, job}
-      else
+      case Job.start(project, Hosts.get_executor()) do
+        {:ok, %Job{} = job} -> {:created, job}
         _ -> {:unprocessable_entity, %{error: "failed"}}
       end
 
@@ -27,25 +28,41 @@ defmodule TideWeb.JobController do
     |> json(entity)
   end
 
-  def show(conn, params) do
+  def show(conn, %{"id" => id}) do
+    resp =
+      case Job.get!(id) do
+        %Job{} = job -> {:ok, job}
+        nil -> {:not_found, %{message: "Job with #{id} not found"}}
+      end
+
+    respond(conn, resp)
   end
 
-  def update(conn, params) do
-  end
-
-  def delete(conn, params) do
+  defp load_project(conn = %Plug.Conn{params: %{"project_id" => project_id}}, _opts) do
+    case Project.get!(project_id) do
+      nil ->
+        conn
+        |> respond({:not_found, %{message: "Project #{project_id} not found"}})
+        |> halt()
+      project ->
+        assign(conn, :project, project)
+    end
   end
 
   defp find_job(conn = conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
     case Job.get(id) do
       nil ->
         conn
-        |> put_status(:not_found)
-        |> json(%{message: "resource #{id} not found"})
+        |> respond({:not_found, %{message: "Job #{id} not found"}})
         |> halt()
-
       job ->
         assign(conn, :job, job)
     end
+  end
+
+  defp respond(conn, {status, resp}) do
+    conn
+    |> put_status(status)
+    |> json(resp)
   end
 end

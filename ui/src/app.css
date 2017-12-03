@@ -2,10 +2,11 @@
   height: 100vh;
 }
 .Header__navigation {
-  background: #5755d9;
+  /* background: #5755d9; */
+  box-shadow: 0px 0px 20px rgba(34, 36, 38, 0.15);
   padding: 1rem;
 }
 
 .navbar-section > .btn.btn-link {
-  color: #fff;
+  /* color: #fff; */
 }

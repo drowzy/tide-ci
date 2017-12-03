@@ -1,0 +1,35 @@
+.Sidebar {
+  background: #5755d9 !important;
+  box-shadow: 0px 0px 20px rgba(34, 36, 38, 0.15);
+  min-width: 12rem !important;
+}
+
+.Sidebar__brand {
+  text-align: center;
+}
+
+.Sidebar__brand i {
+  font-size: 6rem;
+  color: #fff;
+}
+
+.Sidebar__Nav-Item {
+  transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+  font-weight: 400;
+  padding: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.Sidebar__Nav-Item a, .Sidebar__Nav-Item i {
+  color: #fff;
+  font-size: 0.7rem;
+}
+
+.Sidebar__Nav-Item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  border-left: 5px solid #fff;
+}

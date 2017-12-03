@@ -8,6 +8,7 @@ defmodule Tide.Schemas.Job do
   alias Tide.Schemas.Job
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
   @derive {Poison.Encoder, only: [:id, :log, :status]}
 
   schema "jobs" do
@@ -18,7 +19,7 @@ defmodule Tide.Schemas.Job do
     timestamps
   end
 
-  @fields ~w(status log)
+  @fields ~w(status log project_id)
   @statuses ~w(pending started cancelled success failure)
 
   def changeset(data, params \\ %{}) do

@@ -19,6 +19,7 @@ defmodule Tide.Hosts.SSH.Tunnel do
 
     send(self(), :forward)
 
+    Logger.info("SSH Tunnel to #{host} established")
     {
       :ok,
       %{

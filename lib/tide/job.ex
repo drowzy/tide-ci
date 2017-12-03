@@ -8,12 +8,12 @@ defmodule Tide.Job do
 
   @doc """
   """
-  def start(%Project{vcs_url: repo_uri, id: project_id}, host) do
+  def start(%Project{vcs_url: repo_uri, id: project_id} = project, host) do
     name = name_from_uri(repo_uri)
     repo = %Repo{name: name, path: tmp_dir(name), uri: repo_uri}
 
     with {:ok, %Job{id: id} = job} <- Job.create_job(%{status: "pending", project_id: project_id}),
-         :ok <-
+         {:ok, _pid} <-
            Tide.Job.Supervisor.start_job(id, via_tuple(id), repo: repo, uri: socket_uri(host)) do
       {:ok, job}
     else

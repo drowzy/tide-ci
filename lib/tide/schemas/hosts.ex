@@ -40,14 +40,14 @@ defmodule Tide.Schemas.Host do
     |> Repo.insert()
   end
 
-  def update(%Host{} = job, attrs) do
-    job
+  def update(%Host{} = host, attrs) do
+    host
     |> changeset(attrs)
     |> Repo.update()
   end
 
-  def delete(%Host{} = job) do
-    Repo.delete(job)
+  def delete(%Host{} = host) do
+    Repo.delete(host)
   end
 
   def delete do

@@ -1,5 +1,6 @@
 defmodule TideWeb.JobController do
   use TideWeb, :controller
+  require Logger
 
   alias Tide.Schemas.Job
   alias Tide.Schemas.Project
@@ -17,15 +18,15 @@ defmodule TideWeb.JobController do
   end
 
   def create(conn = %Plug.Conn{assigns: %{project: project}}, params) do
-    {status, entity} =
-      case Job.start(project, Hosts.get_executor()) do
+    resp =
+      case Tide.Job.start(project, Hosts.get_executor()) do
         {:ok, %Job{} = job} -> {:created, job}
-        _ -> {:unprocessable_entity, %{error: "failed"}}
+        error ->
+          Logger.error("#{inspect error}")
+          {:unprocessable_entity, %{error: "failed"}}
       end
 
-    conn
-    |> put_status(status)
-    |> json(entity)
+    respond(conn, resp)
   end
 
   def show(conn, %{"id" => id}) do
@@ -44,17 +45,19 @@ defmodule TideWeb.JobController do
         conn
         |> respond({:not_found, %{message: "Project #{project_id} not found"}})
         |> halt()
+
       project ->
         assign(conn, :project, project)
     end
   end
 
-  defp find_job(conn = conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
+  defp find_job(conn = %Plug.Conn{params: %{"id" => id}}, _opts) do
     case Job.get(id) do
       nil ->
         conn
         |> respond({:not_found, %{message: "Job #{id} not found"}})
         |> halt()
+
       job ->
         assign(conn, :job, job)
     end

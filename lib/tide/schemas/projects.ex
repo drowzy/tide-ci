@@ -27,6 +27,7 @@ defmodule Tide.Schemas.Project do
     case common_changeset(data, params) do
       %Ecto.Changeset{errors: errors} = change when length(errors) > 0 ->
         change
+
       %Ecto.Changeset{data: data} = project ->
         slug = generate_slug(data.owner, data.name)
         put_change(project, :slug, slug)

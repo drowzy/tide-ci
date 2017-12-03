@@ -1,5 +1,17 @@
 [%bs.raw {|require('./sidebar.css')|}];
 
+type nav_link = {
+  link: string,
+  label: string
+};
+
+let links = [|
+  { link: "#", label: "Projects"},
+  { link: "#", label: "Machines"},
+  { link: "#", label: "Jobs"},
+  { link: "#", label: "Builds"}
+  |];
+
 let component = ReasonReact.statelessComponent("Sidebar");
 
 let make = (_children) => {
@@ -7,26 +19,16 @@ let make = (_children) => {
     render: (_self) =>
       <div id="sidebar-id" className="Sidebar off-canvas-sidebar">
         <div className="Sidebar__brand">
-          <i className="devicon-docker-plain" />
+          <i className="devicon-sequelize-plain" />
         </div>
         <div className="divider" style=(ReactDOMRe.Style.make(~borderTop=".05rem solid #7270da87", ())) />
         <ul className="nav">
-          <li className="Sidebar__Nav-Item">
-            <a href="#">(ReasonReact.stringToElement("Projects"))</a>
-            <i className="icon icon-arrow-right" />
-          </li>
-          <li className="Sidebar__Nav-Item">
-            <a href="#">(ReasonReact.stringToElement("Machines"))</a>
-            <i className="icon icon-arrow-right" />
-          </li>
-          <li className="Sidebar__Nav-Item">
-            <a href="#">(ReasonReact.stringToElement("Jobs"))</a>
-            <i className="icon icon-arrow-right" />
-          </li>
-          <li className="Sidebar__Nav-Item">
-            <a href="#">(ReasonReact.stringToElement("Builds"))</a>
-            <i className="icon icon-arrow-right" />
-          </li>
+          (Array.map(({ link, label }) =>
+            <li className="Sidebar__Nav-Item">
+              <a href=link>(ReasonReact.stringToElement(label))</a>
+              <i className="icon icon-arrow-right" />
+            </li>
+          , links) |> ReasonReact.arrayToElement)
         </ul>
       </div>
-}
+};

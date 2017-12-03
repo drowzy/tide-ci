@@ -8,14 +8,52 @@ let make = (~message, _children) => {
   ...component,
   render: (_self) =>
     <div className="App">
-      <div className="App-header">
-        <img src=logo className="App-logo" alt="logo" />
-        <h2> (ReasonReact.stringToElement(message)) </h2>
+      <header className="navbar Header__navigation">
+        <section className="navbar-section">
+          <a className="navbar-brand mr-2">
+            (ReasonReact.stringToElement("Spectre.css"))
+          </a>
+          <a className="btn btn-link">
+            (ReasonReact.stringToElement("Docs"))
+          </a>
+          <a className="btn btn-link">
+            (ReasonReact.stringToElement("GitHub"))
+          </a>
+        </section>
+        <section className="navbar-section">
+          <div className="input-group input-inline">
+            <input className="form-input" />
+            <button className="btn btn-primary input-group-btn">
+              (ReasonReact.stringToElement("Search"))
+            </button>
+          </div>
+        </section>
+      </header>
+      <div className="container">
+        <div className="columns">
+          <div className="column col-2">
+            <ul className="menu">
+              <li className="divider"/>
+              <li className="menu-item">
+                <a>
+                  <i className="icon icon-link"/>
+                  (ReasonReact.stringToElement("Slack"))
+                </a>
+              </li>
+              <li className="divider"></li>
+              <li className="menu-item">
+                <div className="menu-badge">
+                  <label className="label label-primary">(ReasonReact.stringToElement("2"))</label>
+                </div>
+                <a>
+                  <i className="icon icon-link"></i>(ReasonReact.stringToElement("Settings"))
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="column col-14">
+          </div>
+        </div>
       </div>
-      <p className="App-intro">
-        (ReasonReact.stringToElement("To get started, edit"))
-        <code> (ReasonReact.stringToElement(" src/app.re ")) </code>
-        (ReasonReact.stringToElement("and save to reload."))
-      </p>
     </div>
 };

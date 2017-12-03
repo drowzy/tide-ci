@@ -29,30 +29,45 @@ let make = (~message, _children) => {
           </div>
         </section>
       </header>
-      <div className="container">
-        <div className="columns">
-          <div className="column col-2">
-            <ul className="menu">
-              <li className="divider"/>
-              <li className="menu-item">
-                <a>
-                  <i className="icon icon-link"/>
-                  (ReasonReact.stringToElement("Slack"))
-                </a>
-              </li>
-              <li className="divider"></li>
-              <li className="menu-item">
-                <div className="menu-badge">
-                  <label className="label label-primary">(ReasonReact.stringToElement("2"))</label>
-                </div>
-                <a>
-                  <i className="icon icon-link"></i>(ReasonReact.stringToElement("Settings"))
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="column col-14">
-          </div>
+      <div className="off-canvas">
+        <a className="off-canvas-toggle btn btn-primary btn-action">
+          <i className="icon icon-menu"></i>
+        </a>
+        <div id="sidebar-id" className="off-canvas-sidebar">
+          <ul className="nav">
+            <li className="nav-item">
+              <a href="#">(ReasonReact.stringToElement("Projects"))</a>
+            </li>
+            <li className="nav-item active">
+              <a href="#">(ReasonReact.stringToElement("Builds"))</a>
+              <ul className="nav">
+                <li className="nav-item">
+                  <a>(ReasonReact.stringToElement("Builds"))</a>
+                </li>
+                <li className="nav-item">
+                  <a>(ReasonReact.stringToElement("Builds"))</a>
+                </li>
+                <li className="nav-item">
+                  <a>(ReasonReact.stringToElement("Builds"))</a>
+                </li>
+                <li className="nav-item">
+                  <a>(ReasonReact.stringToElement("Builds"))</a>
+                </li>
+              </ul>
+            </li>
+            <li className="nav-item">
+              <a>(ReasonReact.stringToElement("Builds"))</a>
+            </li>
+            <li className="nav-item">
+              <a>(ReasonReact.stringToElement("Shell"))</a>
+            </li>
+          </ul>
+        </div>
+
+        <a className="off-canvas-overlay" />
+
+        <div className="off-canvas-content">
+          <p>(ReasonReact.stringToElement(message))</p>
         </div>
       </div>
     </div>

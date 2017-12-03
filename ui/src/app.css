@@ -1,3 +1,6 @@
+.App {
+  height: 100vh;
+}
 .Header__navigation {
   background: #5755d9;
   padding: 1rem;

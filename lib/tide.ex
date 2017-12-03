@@ -8,7 +8,6 @@ defmodule Tide do
     import Supervisor.Spec, warn: false
 
     children = [
-      supervisor(Task.Supervisor, [[name: Tide.Hosts.TaskSupervisor]]),
       supervisor(Tide.Repo, []),
       supervisor(TideWeb.Endpoint, []),
       supervisor(Tide.Hosts.Supervisor, []),

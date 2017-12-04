@@ -10,7 +10,7 @@ let make = (~message, _children) => {
     <div className="App">
       <header className="navbar Header__navigation">
         <section className="navbar-section">
-          <a className="navbar-brand mr-2" style=(ReactDOMRe.Style.make(~fontWeight="600", ()))>
+          <a className="navbar-brand mr-2" style=(ReactDOMRe.Style.make(~fontWeight="600", ~textTransform="uppercase", ()))>
             (ReasonReact.stringToElement("TIDE CI"))
           </a>
         </section>

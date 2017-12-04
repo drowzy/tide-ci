@@ -6,10 +6,11 @@ type nav_link = {
 };
 
 let links = [|
-  { link: "#", label: "Projects"},
+  { link: "#", label: "Repositories"},
   { link: "#", label: "Machines"},
   { link: "#", label: "Jobs"},
-  { link: "#", label: "Builds"}
+  { link: "#", label: "Builds"},
+  { link: "#", label: "Shell"}
   |];
 
 let component = ReasonReact.statelessComponent("Sidebar");
@@ -17,7 +18,7 @@ let component = ReasonReact.statelessComponent("Sidebar");
 let make = (_children) => {
   ...component,
     render: (_self) =>
-      <div id="sidebar-id" className="Sidebar off-canvas-sidebar">
+      <div className="Sidebar off-canvas-sidebar">
         <div className="Sidebar__brand">
           <i className="devicon-sequelize-plain" />
         </div>

@@ -1,22 +1,52 @@
-let component = ReasonReact.statelessComponent("Card");
+type action =
+  | ReceiveRepos(array(Repo.t));
+
+type state = {
+  repos: array(Repo.t)
+};
+
+let receive_repos = repos => ReceiveRepos(repos);
+let initialState = () => { repos: [||] };
 
 let to_elem = ReasonReact.stringToElement;
+
+
+let component = ReasonReact.reducerComponent("Card");
+
 let make = (_children) => {
-  ...component,
-    render: (_self) =>
+  let renderCard = (repo : Repo.t) =>
     <div className="card">
       <div className="card-header">
         <div className="card-title h5">
-            (ReasonReact.stringToElement("dev.tide.ci"))
+            (ReasonReact.stringToElement(repo.slug))
             <i className="devicon-sequelize-plain" />
         </div>
-        <div className="card-subtitle text-gray">(ReasonReact.stringToElement("Deployment server located in the woods"))</div>
+        <div className="card-subtitle text-gray">(ReasonReact.stringToElement(repo.description))</div>
       </div>
       <div className="card-body">
-        (ReasonReact.stringToElement("Software and hardware"))
+        (ReasonReact.stringToElement(repo.vcs_url))
       </div>
       <div className="card-footer">
         <button className="btn btn-primary">(to_elem("Do"))</button>
       </div>
-    </div>
+    </div>;
+  {
+    ...component,
+    initialState,
+    didMount: (self) => {
+      Repo.fetch_repos(self.reduce(receive_repos));
+      ReasonReact.NoUpdate;
+    },
+    reducer: (action, state) => {
+      switch action {
+        | ReceiveRepos(repos) => ReasonReact.Update({...state, repos: repos})
+      };
+    },
+    render: ({ state }) => {
+      switch state.repos {
+        | [||] => (<div>(to_elem("Loading..."))</div>)
+        | repos => repos |> Array.map(repo => renderCard(repo)) |> ReasonReact.arrayToElement
+      };
+    }
+  }
 };

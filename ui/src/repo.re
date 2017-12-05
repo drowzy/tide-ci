@@ -23,9 +23,11 @@ module Decode = {
   };
 };
 
+let headers = Fetch.HeadersInit.makeWithArray([|("Content-type", "application/json"), ("Accept", "application/json")|]);
+
 let fetch_repos = (callback) =>
   Js.Promise.(
-    Fetch.fetch("http://localhost:4000/api/v1/projects")
+    Fetch.fetchWithInit("/api/v1/projects", Fetch.RequestInit.make(~headers=headers,()))
     |> then_(Fetch.Response.json)
     |> then_(json => json |> Decode.repos |> resolve)
     |> then_((repos) => callback(repos) |> resolve)

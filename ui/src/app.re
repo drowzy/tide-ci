@@ -46,12 +46,6 @@ let make = (~message, _children) => {
               <div className="column col-4">
                 <Card />
               </div>
-              <div className="column col-4">
-                <Card />
-              </div>
-              <div className="column col-4">
-                <Card />
-              </div>
             </div>
           </div>
         </div>

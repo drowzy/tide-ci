@@ -43,3 +43,11 @@ let fetch_repos_by_id = (id, callback) =>
     |> ignore
   );
 
+let build_repo = (id, callback) =>
+  Js.Promise.(
+    Fetch.fetchWithInit("/api/v1/projects/" ++ id ++ "/jobs", Fetch.RequestInit.make(~method_=Post, ~headers=headers, ()))
+    |> then_(Fetch.Response.json)
+    |> then_(json => json |> Decode.repo |> resolve)
+    |> then_((job) => callback(job) |> resolve)
+    |> ignore
+  );

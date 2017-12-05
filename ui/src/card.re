@@ -8,9 +8,6 @@ type state = {
 let receive_repos = repos => ReceiveRepos(repos);
 let initialState = () => { repos: [||] };
 
-let to_elem = ReasonReact.stringToElement;
-
-
 let component = ReasonReact.reducerComponent("Card");
 
 let make = (_children) => {
@@ -27,7 +24,7 @@ let make = (_children) => {
         (ReasonReact.stringToElement(repo.vcs_url))
       </div>
       <div className="card-footer">
-        <button className="btn btn-primary">(to_elem("Do"))</button>
+        <button className="btn btn-primary">(ReasonReact.stringToElement("Build"))</button>
       </div>
     </div>;
   {
@@ -44,7 +41,7 @@ let make = (_children) => {
     },
     render: ({ state }) => {
       switch state.repos {
-        | [||] => (<div>(to_elem("Loading..."))</div>)
+        | [||] => (<div className="loading-lg" />)
         | repos => repos |> Array.map(repo => renderCard(repo)) |> ReasonReact.arrayToElement
       };
     }

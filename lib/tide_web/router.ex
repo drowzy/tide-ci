@@ -8,9 +8,9 @@ defmodule TideWeb.Router do
   scope "/api/v1", TideWeb do
     pipe_through(:api)
 
-    resources("/hosts", HostController) do
-      put "/connect", HostController, :connect
-      put "/disconnect", HostController, :disconnect
+    resources "/hosts", HostController do
+      put("/connect", HostController, :connect)
+      put("/disconnect", HostController, :disconnect)
     end
 
     resources "/projects", ProjectController do

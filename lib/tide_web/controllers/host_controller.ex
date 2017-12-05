@@ -38,27 +38,33 @@ defmodule TideWeb.HostController do
   end
 
   def connect(conn = %Plug.Conn{assigns: %{host: %{is_active: true} = host}}, %{"user" => user}) do
-    resp = case Tide.Hosts.connected?(host.hostname) do
-      true -> {:no_content, %{}}
-      false ->
-        {:ok, _pid} = Tide.Hosts.connect(host.hostname, user)
-        {:ok, %{message: "Host #{host.hostname} connected"}}
-    end
+    resp =
+      case Tide.Hosts.connected?(host.hostname) do
+        true ->
+          {:no_content, %{}}
+
+        false ->
+          {:ok, _pid} = Tide.Hosts.connect(host.hostname, user)
+          {:ok, %{message: "Host #{host.hostname} connected"}}
+      end
 
     respond(conn, resp)
   end
 
   def connect(conn = %Plug.Conn{assigns: %{host: host}}, %{"user" => user}) do
     case Tide.Hosts.connected?(host.hostname) do
-      true -> :ok
+      true ->
+        :ok
+
       false ->
         {:ok, _pid} = Tide.Hosts.connect(host.hostname, user)
     end
 
-    resp = case Host.update(host, %{is_active: true}) do
-      {:ok, host} -> {:ok, %{message: "Host #{host.hostname} connected"}}
-      {:error, %Ecto.Changeset{} = _change} -> {:internal_server_error, %{message: "rekt"}}
-    end
+    resp =
+      case Host.update(host, %{is_active: true}) do
+        {:ok, host} -> {:ok, %{message: "Host #{host.hostname} connected"}}
+        {:error, %Ecto.Changeset{} = _change} -> {:internal_server_error, %{message: "rekt"}}
+      end
 
     respond(conn, resp)
   end
@@ -80,6 +86,7 @@ defmodule TideWeb.HostController do
 
   defp find_host(conn = %Plug.Conn{params: params}, _opts) do
     id = Map.get(params, "id") || Map.get(params, "host_id")
+
     case Host.get(id) do
       nil ->
         conn

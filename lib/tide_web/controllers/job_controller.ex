@@ -20,9 +20,11 @@ defmodule TideWeb.JobController do
   def create(conn = %Plug.Conn{assigns: %{project: project}}, params) do
     resp =
       case Tide.Job.start(project, Hosts.get_executor()) do
-        {:ok, %Job{} = job} -> {:created, job}
+        {:ok, %Job{} = job} ->
+          {:created, job}
+
         error ->
-          Logger.error("#{inspect error}")
+          Logger.error("#{inspect(error)}")
           {:unprocessable_entity, %{error: "failed"}}
       end
 

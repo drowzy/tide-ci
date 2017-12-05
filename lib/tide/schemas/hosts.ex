@@ -31,6 +31,11 @@ defmodule Tide.Schemas.Host do
   end
 
   def list, do: Repo.all(Host)
+
+  def list_active do
+    Repo.all(from(h in Host, where: h.is_active == true))
+  end
+
   def get(id), do: Repo.get(Host, id)
   def get!(id), do: Repo.get!(Host, id)
 

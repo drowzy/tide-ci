@@ -8,7 +8,8 @@ defmodule Tide.Hosts.Supervisor do
   def init(_args) do
     children = [
       supervisor(Task.Supervisor, [[name: Tide.Hosts.TaskSupervisor]]),
-      supervisor(Tide.Hosts.WorkerSupervisor, [])
+      supervisor(Tide.Hosts.WorkerSupervisor, []),
+      worker(Tide.Hosts.ProcessStarter, [], restart: :transient)
     ]
 
     supervise(children, strategy: :one_for_one)

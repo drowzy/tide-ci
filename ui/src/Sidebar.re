@@ -1,4 +1,4 @@
-[%bs.raw {|require('./sidebar.css')|}];
+[%bs.raw {|require('./Sidebar.css')|}];
 
 type nav_link = {
   link: string,
@@ -10,6 +10,7 @@ let links = [|
   { link: "#", label: "Machines"},
   { link: "#", label: "Jobs"},
   { link: "#", label: "Builds"},
+  { link: "#", label: "Settings"},
   { link: "#", label: "Shell"}
   |];
 

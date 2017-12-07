@@ -1,6 +1,6 @@
-[%bs.raw {|require('./app.css')|}];
+[%bs.raw {|require('./App.css')|}];
 
-[@bs.module] external logo : string = "./logo.svg";
+/* [@bs.module] external logo : string = "./logo.svg"; */
 
 let component = ReasonReact.statelessComponent("App");
 
@@ -43,9 +43,9 @@ let make = (~message, _children) => {
               </li>
             </ul>
             <div className="columns">
-              <div className="column col-4">
-                <Card />
-              </div>
+              <Card />
+              <div className="divider-vert" />
+              <JobList />
             </div>
           </div>
         </div>

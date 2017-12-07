@@ -12,19 +12,21 @@ let component = ReasonReact.reducerComponent("Card");
 
 let make = (_children) => {
   let renderCard = (repo : Repo.t) =>
-    <div className="card">
-      <div className="card-header">
-        <div className="card-title h5">
-            (ReasonReact.stringToElement(repo.slug))
-            <i className="devicon-sequelize-plain" />
+    <div className="column col-4">
+      <div className="card">
+        <div className="card-header">
+          <div className="card-title h5">
+              (ReasonReact.stringToElement(repo.slug))
+              <i className="devicon-sequelize-plain" />
+          </div>
+          <div className="card-subtitle text-gray">(ReasonReact.stringToElement(repo.description))</div>
         </div>
-        <div className="card-subtitle text-gray">(ReasonReact.stringToElement(repo.description))</div>
-      </div>
-      <div className="card-body">
-        (ReasonReact.stringToElement(repo.vcs_url))
-      </div>
-      <div className="card-footer">
-        <button className="btn btn-primary">(ReasonReact.stringToElement("Build"))</button>
+        <div className="card-body">
+          (ReasonReact.stringToElement(repo.vcs_url))
+        </div>
+        <div className="card-footer">
+          <button className="btn btn-primary">(ReasonReact.stringToElement("Build"))</button>
+        </div>
       </div>
     </div>;
   {

@@ -8,12 +8,13 @@ defmodule Tide.Hosts.ProcessStarter do
   end
 
   def run do
-    hosts = Tide.Schemas.Host.list_active()
+    hosts = Host.list_active()
 
     Enum.map(hosts, &connect/1)
+    :ok
   end
 
   defp connect(%Host{hostname: hostname}) do
-    Tide.Hosts.connect(hostname, @user)
+    {:ok, pid} = Tide.Hosts.connect(hostname, @user)
   end
 end

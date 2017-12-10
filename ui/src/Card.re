@@ -1,5 +1,6 @@
 type action =
-  | ReceiveRepos(array(Repo.t));
+  | ReceiveRepos(array(Repo.t))
+  | Build(Repo.t);
 
 type state = {
   repos: array(Repo.t)
@@ -11,7 +12,7 @@ let initialState = () => { repos: [||] };
 let component = ReasonReact.reducerComponent("Card");
 
 let make = (_children) => {
-  let renderCard = (repo : Repo.t) =>
+  let renderCard = (repo : Repo.t, ~handleClick) =>
     <div className="column col-4">
       <div className="card">
         <div className="card-header">
@@ -25,7 +26,7 @@ let make = (_children) => {
           (ReasonReact.stringToElement(repo.vcs_url))
         </div>
         <div className="card-footer">
-          <button className="btn btn-primary">(ReasonReact.stringToElement("Build"))</button>
+          <button className="btn btn-primary" onClick={handleClick}>(ReasonReact.stringToElement("Build"))</button>
         </div>
       </div>
     </div>;
@@ -39,12 +40,13 @@ let make = (_children) => {
     reducer: (action, state) => {
       switch action {
         | ReceiveRepos(repos) => ReasonReact.Update({...state, repos: repos})
+        | Build(_repo) => ReasonReact.SilentUpdate(state)
       };
     },
     render: ({ state }) => {
       switch state.repos {
         | [||] => (<div className="loading-lg" />)
-        | repos => repos |> Array.map(repo => renderCard(repo)) |> ReasonReact.arrayToElement
+        | repos => repos |> Array.map(repo => renderCard(repo, ~handleClick=(_event) => Repo.build_repo(repo.id, ignore))) |> ReasonReact.arrayToElement
       };
     }
   }

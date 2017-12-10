@@ -3,8 +3,7 @@
 let component = ReasonReact.statelessComponent("JobList");
 
 let make = (_children) => {
-  ...component,
-    render: (_self) =>
+  let renderItem = () => 
     <div className="tile tile-centered">
       <div className="tile-icon">
         <div className="JobList-icon">
@@ -22,5 +21,16 @@ let make = (_children) => {
         <button className="btn btn-link">
         </button>
       </div>
+    </div>;
+    {
+  ...component,
+    render: (_self) =>
+    <div>
+      (renderItem ())
+      (renderItem ())
+      (renderItem ())
+      (renderItem ())
+      (renderItem ())
     </div>
+  }
 };

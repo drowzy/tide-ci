@@ -7,6 +7,31 @@ type t = {
   description: string
 };
 
+module Build = {
+  type status =
+  | Pending
+  | Started
+  | Cancelled
+  | Success
+  | Failure;
+
+  type t = {
+    id: string,
+    status: status
+  };
+
+  let str_to_status = str => {
+    switch str {
+      | "pending" => Pending
+      | "started" => Started
+      | "cancelled" => Cancelled
+      | "success" => Success
+      | "failure" => Failure
+      | _ => raise(Not_found)
+    };
+  }
+};
+
 module Decode = {
   open! Json.Decode;
   let repo = json => {

@@ -16,5 +16,7 @@ defmodule TideWeb.Router do
     resources "/projects", ProjectController do
       resources("/jobs", JobController)
     end
+
+    post("/events", EventController, :handler)
   end
 end

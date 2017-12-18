@@ -43,9 +43,7 @@ let make = (~message, _children) => {
               </li>
             </ul>
             <div className="columns">
-              <Card />
-              <div className="divider-vert" />
-              <JobList />
+              <ProjectList />
             </div>
           </div>
         </div>

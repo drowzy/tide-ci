@@ -28,13 +28,22 @@ defmodule Tide.Schemas.Project do
       %Ecto.Changeset{errors: errors} = change when length(errors) > 0 ->
         change
 
-      %Ecto.Changeset{data: data} = project ->
+      %Ecto.Changeset{changes: data} = project ->
         slug = generate_slug(data.owner, data.name)
         put_change(project, :slug, slug)
     end
   end
 
-  def update_changeset(data, params \\ %{}), do: insert_changeset(data, params)
+  def update_changeset(data, params \\ %{}) do
+    case common_changeset(data, params) do
+      %Ecto.Changeset{errors: errors} = change when length(errors) > 0 ->
+        change
+
+      %Ecto.Changeset{changes: %{owner: owner, name: name}} = project ->
+        slug = generate_slug(data.owner, data.name)
+        put_change(project, :slug, slug)
+    end
+  end
 
   def common_changeset(data, params \\ %{}) do
     data
@@ -45,6 +54,7 @@ defmodule Tide.Schemas.Project do
   def list, do: Repo.all(Project)
   def get(id), do: Repo.get(Project, id)
   def get!(id), do: Repo.get!(Project, id)
+  def get_by(term), do: Repo.get_by(Project, term)
 
   def create(attrs \\ %{}) do
     %Project{}

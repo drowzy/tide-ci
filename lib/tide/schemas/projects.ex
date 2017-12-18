@@ -25,23 +25,19 @@ defmodule Tide.Schemas.Project do
 
   def insert_changeset(data, params \\ %{}) do
     case common_changeset(data, params) do
-      %Ecto.Changeset{errors: errors} = change when length(errors) > 0 ->
-        change
-
-      %Ecto.Changeset{changes: data} = project ->
-        slug = generate_slug(data.owner, data.name)
+      %Ecto.Changeset{changes: %{owner: owner, name: name}} = project ->
+        slug = generate_slug(owner, name)
         put_change(project, :slug, slug)
+      change -> change
     end
   end
 
   def update_changeset(data, params \\ %{}) do
     case common_changeset(data, params) do
-      %Ecto.Changeset{errors: errors} = change when length(errors) > 0 ->
-        change
-
       %Ecto.Changeset{changes: %{owner: owner, name: name}} = project ->
-        slug = generate_slug(data.owner, data.name)
+        slug = generate_slug(owner, name)
         put_change(project, :slug, slug)
+      change -> change
     end
   end
 

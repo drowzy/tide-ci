@@ -90,8 +90,8 @@ let fetch_repo_builds = (id, callback) =>
   Js.Promise.(
     Fetch.fetchWithInit("/api/v1/projects/" ++ id ++ "/jobs", Fetch.RequestInit.make(~headers=headers, ()))
     |> then_(Fetch.Response.json)
-    |> then_(json => json |> Decode.repo |> resolve)
-    |> then_((job) => callback(job) |> resolve)
+    |> then_(json => json |> Decode.builds |> resolve)
+    |> then_((builds) => callback(builds) |> resolve)
     |> ignore
   );
 

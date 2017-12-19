@@ -1,5 +1,3 @@
-[%bs.raw {|require('./Sidebar.css')|}];
-
 let component = ReasonReact.statelessComponent("Build");
 
 let make = (_children) => {

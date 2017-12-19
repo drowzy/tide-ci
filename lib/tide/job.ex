@@ -1,4 +1,5 @@
 defmodule Tide.Job do
+  require Logger
   alias Tide.Repository, as: Repo
   alias Tide.Schemas.Job
   alias Tide.Schemas.Project
@@ -15,9 +16,15 @@ defmodule Tide.Job do
     with {:ok, %Job{id: id} = job} <- Job.create_job(%{status: "pending", project_id: project_id}),
          {:ok, _pid} <-
            Tide.Job.Supervisor.start_job(id, via_tuple(id), repo: repo, uri: socket_uri(host)) do
+
+      Logger.info("Job started for repo: #{name} on #{host}")
+
       {:ok, job}
     else
-      {:error, reason} -> {:error, reason}
+      {:error, reason} ->
+
+        Logger.error("Job could not start for: #{name} on #{host} with reason #{inspect reason}")
+        {:error, reason}
     end
   end
 

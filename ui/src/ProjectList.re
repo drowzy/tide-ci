@@ -15,7 +15,8 @@ let component = ReasonReact.reducerComponent("ProjectList");
 
 let make = (_children) => {
   let renderProjectEntry = (repo : Repo.t, ~handleClick) =>
-    <div className="tile tile-centered project-list">
+  <div className="project-list">
+    <div className="tile tile-centered">
       <div className="tile-icon">
         <div className="project-icon">
           <i className="devicon-nodejs-plain centered" />
@@ -28,9 +29,12 @@ let make = (_children) => {
           </div>
       </div>
       <div className="tile-action">
-        <button className="btn btn-link" onClick={handleClick}>(ReasonReact.stringToElement("Build"))</button>
+        <button className="btn btn-sm" style=(ReactDOMRe.Style.make(~marginRight=".2rem", ())) onClick={handleClick}>(ReasonReact.stringToElement("Go to"))</button>
+        <button className="btn btn-sm" onClick={handleClick}>(ReasonReact.stringToElement("Build"))</button>
       </div>
-    </div>;
+    </div>
+    <div className="divider" style=(ReactDOMRe.Style.make(~borderTop=".05rem solid #7270da87", ())) />
+  </div>;
 
   {
     ...component,

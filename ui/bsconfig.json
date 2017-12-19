@@ -1,12 +1,13 @@
 {
   "name": "reason-scripts",
   "sources": [
-    "src"
+    { "dir": "src", "subdirs": true }
   ],
   "bs-dependencies": [
     "reason-react",
     "bs-jest",
     "bs-fetch",
+    "bs-director",
     "bs-json"
   ],
   "reason": {

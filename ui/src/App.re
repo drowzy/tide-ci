@@ -1,28 +1,20 @@
 [%bs.raw {|require('./App.css')|}];
-
 /* [@bs.module] external logo : string = "./logo.svg"; */
 
 let component = ReasonReact.statelessComponent("App");
 
-let make = (~message, _children) => {
+let make = (~route, ~router, _children) => {
   ...component,
-  render: (_self) =>
+  render: (_self) => {
+    let page = switch route {
+      | Routing.Overview => <ProjectList />
+      | Routing.ProjectRoute(_id) => <ProjectList />
+      | Routing.ProjectBuildsRoute(_id) => <ProjectList />
+      | Routing.ProjectBuildRoute(_projectId, _id) => <Build />
+    };
+
     <div className="App">
-      <header className="navbar Header__navigation">
-        <section className="navbar-section">
-          <a className="navbar-brand mr-2" style=(ReactDOMRe.Style.make(~fontWeight="600", ~textTransform="uppercase", ()))>
-            (ReasonReact.stringToElement("TIDE CI"))
-          </a>
-        </section>
-        <section className="navbar-section">
-          <div className="input-group input-inline">
-            <input className="form-input" />
-            <button className="btn btn-primary input-group-btn">
-              (ReasonReact.stringToElement("Search"))
-            </button>
-          </div>
-        </section>
-      </header>
+      <Header />
       <div className="off-canvas">
         <a className="off-canvas-toggle btn btn-primary btn-action">
           <i className="icon icon-menu"></i>
@@ -43,10 +35,11 @@ let make = (~message, _children) => {
               </li>
             </ul>
             <div className="columns">
-              <ProjectList />
+              page
             </div>
           </div>
         </div>
       </div>
     </div>
+  }
 };

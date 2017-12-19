@@ -17,7 +17,8 @@ module Build = {
 
   type t = {
     id: string,
-    status: status
+    status: status,
+    log: array(string)
   };
 
   let str_to_status = str => {
@@ -46,6 +47,14 @@ module Decode = {
   let repos = json => {
     json |> array(repo)
   };
+
+  let build = (json) : Build.t => {
+    id: json |> field("id", string),
+    status: json |> field("status", string) |> Build.str_to_status,
+    log: json |> field("log", array(string))
+  };
+
+  let builds = json => json |> array(repo)
 };
 
 let headers = Fetch.HeadersInit.makeWithArray([|("Content-type", "application/json"), ("Accept", "application/json")|]);
@@ -65,6 +74,24 @@ let fetch_repos_by_id = (id, callback) =>
     |> then_(Fetch.Response.json)
     |> then_(json => json |> Decode.repo |> resolve)
     |> then_((repo) => callback(repo) |> resolve)
+    |> ignore
+  );
+
+let build_repo = (id, callback) =>
+  Js.Promise.(
+    Fetch.fetchWithInit("/api/v1/projects/" ++ id ++ "/jobs", Fetch.RequestInit.make(~method_=Post, ~headers=headers, ()))
+    |> then_(Fetch.Response.json)
+    |> then_(json => json |> Decode.repo |> resolve)
+    |> then_((job) => callback(job) |> resolve)
+    |> ignore
+  );
+
+let fetch_repo_builds = (id, callback) =>
+  Js.Promise.(
+    Fetch.fetchWithInit("/api/v1/projects/" ++ id ++ "/jobs", Fetch.RequestInit.make(~headers=headers, ()))
+    |> then_(Fetch.Response.json)
+    |> then_(json => json |> Decode.repo |> resolve)
+    |> then_((job) => callback(job) |> resolve)
     |> ignore
   );
 

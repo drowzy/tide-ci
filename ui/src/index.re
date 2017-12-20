@@ -26,4 +26,3 @@ DirectorRe.configure(router, {
 });
 
 DirectorRe.init(router, "/")
-/* ReactDOMRe.renderToElementWithId(<App message="Welcome to React and Reason" />, "root"); */

@@ -7,9 +7,9 @@ let make = (~route, ~router, _children) => {
   ...component,
   render: (_self) => {
     let page = switch route {
-      | Routing.Overview => <ProjectList />
-      | Routing.ProjectRoute(_id) => <ProjectList />
-      | Routing.ProjectBuildsRoute(_id) => <ProjectList />
+      | Routing.Overview => <ProjectList router />
+      | Routing.ProjectRoute(_id) => <ProjectDetails />
+      | Routing.ProjectBuildsRoute(_id) => <ProjectList router />
       | Routing.ProjectBuildRoute(_projectId, _id) => <Build />
     };
 

@@ -1,0 +1,5 @@
+.build-log {
+  white-space: pre-wrap;
+  padding: 1rem;
+  font-family: monospace;
+}

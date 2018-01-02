@@ -8,7 +8,7 @@ let make = (~route, ~router, _children) => {
   render: (_self) => {
     let page = switch route {
       | Routing.Overview => <ProjectList router />
-      | Routing.ProjectRoute(_id) => <ProjectDetails />
+      | Routing.ProjectRoute(id) => <ProjectDetails id />
       | Routing.ProjectBuildsRoute(_id) => <ProjectList router />
       | Routing.ProjectBuildRoute(_projectId, _id) => <Build />
     };
@@ -34,9 +34,7 @@ let make = (~route, ~router, _children) => {
                 <a href="#">(ReasonReact.stringToElement("Builds"))</a>
               </li>
             </ul>
-            <div className="columns">
-              page
-            </div>
+            page
           </div>
         </div>
       </div>

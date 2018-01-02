@@ -54,7 +54,7 @@ module Decode = {
     log: json |> field("log", array(string))
   };
 
-  let builds = json => json |> array(repo)
+  let builds = json => json |> array(build);
 };
 
 let headers = Fetch.HeadersInit.makeWithArray([|("Content-type", "application/json"), ("Accept", "application/json")|]);

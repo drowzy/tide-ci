@@ -2,4 +2,4 @@ type routes =
   | Overview
   | ProjectRoute(string)
   | ProjectBuildsRoute(string)
-  | ProjectBuildRoute(string ,string)
+  | ProjectBuildRoute(string, string)

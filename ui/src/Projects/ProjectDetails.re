@@ -1,78 +1,71 @@
 [%bs.raw {|require('./ProjectDetails.css')|}];
-let component = ReasonReact.statelessComponent("ProjectDetails");
+
 
 type log = List(string);
-let logs = [
-      "Step 1/16 : FROM ocaml/opam:ubuntu-16.04_ocaml-4.04.0",
-      "\n",
-      " ---> 29f5e8c326cf\n",
-      "Step 2/16 : ENV OPAM_PKGS ocamlfind ocamlbuild jbuilder core_kernel menhir cmdliner yojson ounit opium",
-      "\n",
-      " ---> Using cache\n",
-      " ---> ca3858b9bf66\n",
-      "Step 3/16 : USER opam",
-      "\n",
-      " ---> Using cache\n",
-      " ---> 4d3d12c56b23\n",
-      "Step 4/16 : ENV TERM xterm",
-      "\n",
-      " ---> Using cache\n",
-      " ---> bd35c251d94e\n",
-      "Step 5/16 : RUN opam config exec -- opam update",
-      "\n",
-      " ---> Using cache\n",
-      " ---> a43d2187a26b\n",
-      "Step 6/16 : RUN opam config exec -- opam depext -i $OPAM_PKGS",
-      "\n",
-      " ---> Using cache\n",
-      " ---> 922122f887c0\n",
-      "Step 7/16 : ADD . ez",
-      "\n",
-      " ---> Using cache\n",
-      " ---> 4d0e72ff6c25\n",
-      "Step 8/16 : RUN sudo chown -R opam.nogroup /home/opam/ez",
-      "\n",
-      " ---> Using cache\n",
-      " ---> bc7781b28b15\n",
-      "Step 9/16 : WORKDIR /home/opam/ez",
-      "\n",
-      " ---> Using cache\n",
-      " ---> 1381699ae288\n",
-      "Step 10/16 : RUN opam config exec -- make",
-      "\n",
-      " ---> Using cache\n",
-      " ---> bb3a0d29f7b9\n",
-      "ID : sha256:bb3a0d29f7b9bdfdd52ec401c56d63ecb2a03716dd037656fe8480163f57cd2f",
-      "Step 11/16 : FROM ocaml/ocaml:ubuntu-16.04",
-      "\n",
-      " ---> 33bb96f3564c\n",
-      "Step 12/16 : COPY --from=0 /home/opam/ez/_build/default/bin/compiler_service/ez_cs.exe /ez_cs.exe",
-      "\n",
-      " ---> Using cache\n",
-      " ---> 025f5d99ff63\n",
-      "Step 13/16 : RUN chmod +x /ez_cs.exe",
-      "\n",
-      " ---> Using cache\n",
-      " ---> afb93827763d\n",
-      "Step 14/16 : EXPOSE 3000",
-      "\n",
-      " ---> Using cache\n",
-      " ---> fe5fcb0f3908\n",
-      "Step 15/16 : ENTRYPOINT [\"/ez_cs.exe\"]",
-      "\n",
-      " ---> Using cache\n",
-      " ---> 8ff7f1fd70e4\n",
-      "Step 16/16 : CMD [\"-v\"]",
-      "\n",
-      " ---> Using cache\n",
-      " ---> 12541b72571b\n",
-      "ID : sha256:12541b72571b14a3df3db88c16c657bc3bfdf2ce1f54de7ffbc2b744bfd4809e",
-      "Successfully built 12541b72571b\n"
-    ];
-let make = (_children) => {
-  ...component,
-    render: (_self) =>
-      <code className="build-log">
-        (ReasonReact.stringToElement(String.concat("", logs)))
-      </code>
+
+type result =
+  | Ok(Repo.t)
+  | Loading;
+
+type action =
+  | ReceiveRepo(Repo.t)
+  | ReceiveBuilds(array(Repo.Build.t));
+
+type state = {
+  repo: result,
+  builds: array(Repo.Build.t)
+};
+
+let initialState = () => { repo: Loading, builds: [||] };
+let receive_repo = repo => ReceiveRepo(repo);
+let receive_builds = builds => ReceiveBuilds(builds);
+
+let component = ReasonReact.reducerComponent("ProjectDetails");
+
+let make = (~id, _children) => {
+  let renderCodeBlock = (build: Repo.Build.t) =>
+    <div>
+      (switch build.status {
+        | Success => <span className="label label-success">(ReasonReact.stringToElement("Success"))</span>
+        | Failure => <span className="label label-error">(ReasonReact.stringToElement("Failed"))</span>
+        | _ => <span className="label">(ReasonReact.stringToElement("N/A"))</span>
+      })
+      <pre className="code">
+        <code className="build-log">
+          (ReasonReact.stringToElement(String.concat("", Array.to_list(build.log))))
+        </code>
+      </pre>
+    </div>;
+
+  let renderProject = (repo: Repo.t, builds) =>
+    <div className="test">
+      <div className="project-title ">
+          <h2>
+            (ReasonReact.stringToElement(repo.owner ++ " / " ++ repo.name ))
+            <i className="devicon-github-plain-wordmark" style=(ReactDOMRe.Style.make(~marginLeft="1rem", ~fontSize="1.5rem", ~verticalAlign="middle", ())) />
+          </h2>
+      </div>
+      (builds |> Array.map(renderCodeBlock) |> ReasonReact.arrayToElement)
+    </div>;
+  {
+    ...component,
+    initialState,
+    didMount: (self) => {
+      Repo.fetch_repos_by_id(id, self.reduce(receive_repo));
+      Repo.fetch_repo_builds(id, self.reduce(receive_builds));
+      ReasonReact.NoUpdate
+    },
+    reducer: (action, state) => {
+      switch action {
+        | ReceiveRepo(repo) => ReasonReact.Update({...state, repo: Ok(repo)})
+        | ReceiveBuilds(builds) => ReasonReact.Update({...state, builds: builds})
+      };
+    },
+    render: ({ state }) => {
+      switch state.repo {
+        | Ok(repo) => renderProject(repo, state.builds)
+        | Loading => (<div className="loading-lg" />)
+      };
+    }
+  }
 };

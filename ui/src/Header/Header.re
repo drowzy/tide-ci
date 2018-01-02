@@ -12,12 +12,6 @@ let make = (_children) => {
           </a>
         </section>
         <section className="navbar-section">
-          <div className="input-group input-inline">
-            <input className="form-input" />
-            <button className="btn btn-primary input-group-btn">
-              (ReasonReact.stringToElement("Search"))
-            </button>
-          </div>
         </section>
       </header>
 };

@@ -61,11 +61,8 @@ defmodule Tide.Job.Worker do
   end
 
   def handle_info({:EXIT, pid, reason}, %{id: id, log: log} = state) do
-    Logger.debug("Exiting proc: #{inspect(pid)} me #{inspect(self())}")
     success = Message.success?(log)
-    Logger.debug("Job completed with status #{inspect(reason)} : #{success}")
-
-    Logger.debug("Logs #{inspect(Message.stringify(log))}")
+    Logger.debug("Job completed with status #{inspect(reason)} : #{success} Logs #{inspect(Message.stringify(log))}")
 
     case persist(id, success, state) do
       {:ok, _resource} -> Logger.debug("Job #{id} stored")

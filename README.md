@@ -14,64 +14,43 @@ def deps do
   ]
 end
 ```
-## Enteties
 
-* Accounts (users)
+## Examples
+
 ```
+POST http://localhost:4000/api/v1/hosts
+Content-Type: application/json
 {
-  "id": "ecf08eea-9a10-47ab-aef4-16aaf158d414",
-  "name": "Simon",
-  "email": "simon@simon.com",
-  "password_hash": "a2psa2phc2xmamxha2pzZmxh"
+  "name": "my.vm.host",
+  "is_active": true,
+  "hostname": "192.168.90.15",
+  "description": "coolest host ever built",
+  "credentials": {
+    "user": "ubuntu"
+  }
 }
 ```
-* Projects / Pipeline
-```json
+```
+PUT http://localhost:4000/api/v1/hosts/8ea76b34-b53c-4ba1-8058-e66ccedda701/connect
+Content-Type: application/json
+Accept: application/json
 {
-  "id": "7374759f-e504-4d72-8adf-845514ba8ff8",
-  "name": "tide",
-  "repository": <repository>,
-  "jobs": [<job>]
+  "user": "ubuntu"
 }
 ```
-* Jobs
-```json
+* Add project
+```
+POST http://localhost:4000/api/v1/projects
+Content-Type: application/json
+Accept: application/json
 {
-  "id": "3d44c531-beab-4025-896e-592a57a15de0",
-  "status": "started | failed | finished",
-  "timestamp": 1508616202,
-  "project_id": "f4baff84-4932-4f28-a943-0ec0b3146d87",
-  "finished": 1508616235,
-  "executor": ""
+  "vcs_url": "git@github.com:drowzy/tide-ci.git",
+  "owner": "drowzy",
+  "name": "tide-ci",
+  "description": "Agent less CI"
 }
 ```
-* Repository
-```json
-{
-  "id": "aab7fb98-851f-45bc-b6ce-ee9a0d18e67c",
-  "type": "https | ssh",
-  "uri": "git@github.com/simon/tide",
-}
+* Start job
 ```
-* Credentials
-```json
-{
-  "id": "6b260080-2292-4648-898c-a23aed79f8d8",
-  "type": "certs | pass",
-  "private_key": "<public_key>"
-  "public_key": "<private_key>"
-}
+POST http://localhost:4000/api/v1/projects/<id>/jobs
 ```
-* Hosts
-```json
-{
-  "id": "024ffe00-43c2-4d3f-a1a9-6387e38b1dcb",
-  "name": "hostname",
-  "hostname": "hostname",
-  "ip": "127.0.0.1",
-  "docker_port"
-}
-```
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/tide_ci](https://hexdocs.pm/tide_ci).

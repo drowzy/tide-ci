@@ -1,5 +1,6 @@
 defmodule TideWeb.HostController do
   use TideWeb, :controller
+  require Logger
 
   alias Tide.Schemas.Host
 
@@ -13,10 +14,10 @@ defmodule TideWeb.HostController do
     |> json(hosts)
   end
 
-  def create(conn, %{"user" => user} = params) do
+  def create(conn, params) do
     {status, entity} =
-      with {:ok, %Host{id: id, hostname: hostname} = host} <- Host.create(params),
-           {:ok, _pid} = Tide.Hosts.connect(hostname, user) do
+      with {:ok, %Host{id: id, hostname: hostname, credentials: credentials} = host} <- Host.create(params),
+           {:ok, _pid} = Tide.Hosts.connect(id, hostname, credentials.user) do
         {:created, host}
       else
         _ -> {:unprocessable_entity, %{error: "failed"}}
@@ -37,27 +38,27 @@ defmodule TideWeb.HostController do
     respond(conn, resp)
   end
 
-  def connect(conn = %Plug.Conn{assigns: %{host: %{is_active: true} = host}}, %{"user" => user}) do
+  def connect(conn = %Plug.Conn{assigns: %{host: %{is_active: true} = host}}, _params) do
     resp =
       case Tide.Hosts.connected?(host.hostname) do
         true ->
           {:no_content, %{}}
 
         false ->
-          {:ok, _pid} = Tide.Hosts.connect(host.hostname, user)
+          {:ok, _pid} = Tide.Hosts.connect(host.id, host.hostname, host.credentials.user)
           {:ok, %{message: "Host #{host.hostname} connected"}}
       end
 
     respond(conn, resp)
   end
 
-  def connect(conn = %Plug.Conn{assigns: %{host: host}}, %{"user" => user}) do
+  def connect(conn = %Plug.Conn{assigns: %{host: host}}, _params) do
     case Tide.Hosts.connected?(host.hostname) do
       true ->
         :ok
 
       false ->
-        {:ok, _pid} = Tide.Hosts.connect(host.hostname, user)
+        {:ok, _pid} = Tide.Hosts.connect(host.id, host.hostname, host.credentials.user)
     end
 
     resp =
@@ -69,16 +70,19 @@ defmodule TideWeb.HostController do
     respond(conn, resp)
   end
 
-  def update(conn, params) do
+  def update(_conn, _params) do
   end
 
   def delete(conn = %Plug.Conn{assigns: %{host: host}}, _params) do
     resp =
-      with _reason <- Tide.Hosts.disconnect(host.hostname),
+      with _reason <- Tide.Hosts.disconnect(host.id),
            {:ok, _changeset} <- Host.delete(host) do
+        Logger.info("Host #{host.hostname} disconnected & deleted")
         {:no_content, %{}}
       else
-        {:error, _} -> {:internal_server_error, %{message: "rekt"}}
+        {:error, reason} ->
+          Logger.error("Host #{host.hostname} could not be disconnedted #{inspect reason}")
+          {:internal_server_error, %{message: "rekt"}}
       end
 
     respond(conn, resp)

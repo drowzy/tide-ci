@@ -9,6 +9,7 @@ defmodule Tide.Hosts.Supervisor do
     children = [
       supervisor(Task.Supervisor, [[name: Tide.Hosts.TaskSupervisor]]),
       supervisor(Tide.Hosts.WorkerSupervisor, []),
+      supervisor(Registry, [:unique, Tide.Hosts.Registry]),
       worker(Tide.Hosts.ProcessStarter, [], restart: :transient)
     ]
 

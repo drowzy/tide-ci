@@ -14,7 +14,7 @@ defmodule Tide.Hosts.ProcessStarter do
     :ok
   end
 
-  defp connect(%Host{hostname: hostname}) do
-    {:ok, pid} = Tide.Hosts.connect(hostname, @user)
+  defp connect(%Host{id: id, hostname: hostname}) do
+    {:ok, _pid} = Tide.Hosts.connect(id, hostname, @user)
   end
 end

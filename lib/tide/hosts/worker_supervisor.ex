@@ -13,13 +13,15 @@ defmodule Tide.Hosts.WorkerSupervisor do
     supervise(children, strategy: :simple_one_for_one)
   end
 
-  def register(ssh, opts) do
-    Supervisor.start_child(__MODULE__, [ssh, opts])
+  def register(ssh, name, opts) do
+    Supervisor.start_child(__MODULE__, [ssh, Keyword.merge(opts, name: name)])
   end
 
   def get_hosts, do: Supervisor.which_children(__MODULE__)
 
   def find_host(name) do
+    IO.puts(name)
+    IO.puts("inspect #{get_hosts()}")
     get_hosts()
     |> Enum.find(fn {%{name: process_name}, _, _, _} ->
          name == process_name
